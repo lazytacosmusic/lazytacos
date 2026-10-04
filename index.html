@@ -179,12 +179,18 @@
       display: flex;
       flex-direction: column;
     }
-    .day-names-row, .calendar-grid {
+    .day-names-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
       width: 100%;
-      table-layout: fixed;
+      margin-bottom: 6px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      width: 100%;
     }
     .day-name {
       font-size: 0.75rem;
@@ -194,10 +200,10 @@
       padding: 4px 0;
     }
     .cal-cell {
-      aspect-ratio: 1;
+      min-height: 54px;
       background: #241812;
       border-radius: 8px;
-      padding: 2px;
+      padding: 4px 2px;
       border: 1px solid #38251B;
       display: flex;
       flex-direction: column;
@@ -205,13 +211,12 @@
       align-items: center;
       cursor: pointer;
       position: relative;
-      min-height: 48px;
       overflow: hidden;
       width: 100%;
     }
-    .cal-cell.other-month { opacity: 0.3; }
-    .cal-cell.selected { border: 2px solid var(--c-orange); background: rgba(224,74,29,0.15); }
-    .cal-cell .date-num { font-size: 0.85rem; font-weight: bold; line-height: 1; margin-top: 2px; }
+    .cal-cell.other-month { opacity: 0.2; pointer-events: none; }
+    .cal-cell.selected { border: 2px solid var(--c-orange); background: rgba(224,74,29,0.25); }
+    .cal-cell .date-num { font-size: 0.9rem; font-weight: bold; line-height: 1; color: var(--c-ivory); }
     
     .cal-cell.has-overlap { box-shadow: inset 0 0 8px rgba(224, 74, 29, 0.6); border-color: var(--c-orange); }
     .cal-cell.full-band { box-shadow: 0 0 10px rgba(127, 135, 82, 0.8); border: 2px solid var(--c-olive); background: rgba(127, 135, 82, 0.2); }
@@ -219,16 +224,17 @@
     .cal-cell.hk-holiday { background: #40061A !important; border: 1.5px solid var(--c-hk-pink) !important; }
     .cal-cell.hk-holiday .date-num { color: var(--c-hk-pink); font-weight: 900; }
     .hk-tag {
-      font-size: 0.5rem;
+      font-size: 0.55rem;
       background: var(--c-hk-pink);
       color: #FFF;
-      padding: 1px 2px;
+      padding: 1px 3px;
       border-radius: 3px;
       font-weight: bold;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
+      text-align: center;
     }
 
     .gold-show-plate {
@@ -427,7 +433,7 @@
     <div class="card">
       <div class="calendar-header">
         <button class="btn btn-outline" onclick="changeMonth(-1)">◀ Prev</button>
-        <div class="month-title" id="calendarMonthTitle">Month 2026</div>
+        <div class="month-title" id="calendarMonthTitle">October 2026</div>
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
       </div>
 
@@ -814,7 +820,7 @@
   </div>
 
   <script>
-    // Firebase credentials from your console screenshot
+    // Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyByh1Z9Ji6VMFL2kZIgVfsAahmQsKFDbOs",
       authDomain: "lazytacosscheduler-c0ddf.firebaseapp.com",
@@ -891,7 +897,7 @@
         if (cloudData) {
           appData = cloudData;
           if (!appData.members) appData.members = DEFAULT_MEMBERS;
-          saveState(false); // Save locally without re-uploading
+          saveState(false);
           renderAllViews();
         }
       });
@@ -1011,7 +1017,7 @@
         if (isHkHoliday) {
           innerHTML += `<div class="hk-tag">🇭🇰 ${HK_HOLIDAYS[dateStr]}</div>`;
         } else if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          innerHTML += `<div style="font-size:0.55rem;">👑 Full Band</div>`;
+          innerHTML += `<div style="font-size:0.55rem; color:var(--c-olive); font-weight:bold;">👑 Full Band</div>`;
         }
 
         const dayShow = appData.shows.find(s => s.date === dateStr);
@@ -1043,7 +1049,6 @@
       }
     }
 
-    /* WEEKDAYS LIMITED TO SINGLE NIGHT TIME + SEPARATE EARLY LEAVE BUTTON */
     function renderDayDetails(dateStr) {
       document.getElementById('selectedDateLabel').textContent = `📅 ${dateStr}`;
       const holidayTag = document.getElementById('holidayTagLabel');
@@ -1078,7 +1083,6 @@
           grid.appendChild(chip);
         });
       } else {
-        // WEEKDAY: SINGLE "NIGHT TIME" TAB + "EARLY LEAVE" BUTTON
         const nightChip = document.createElement('div');
         nightChip.className = 'slot-chip';
         const nightStatus = userAvail['NIGHT'];
@@ -1120,7 +1124,6 @@
       renderDayDetails(dateStr);
     }
 
-    /* WORKING "FIRM", "TBC", "SUBJ TO CHANGE" BUTTONS */
     function setSlotStatus(status) {
       if (!appData.availability[selectedCalDate]) appData.availability[selectedCalDate] = {};
       if (!appData.availability[selectedCalDate][appData.currentUser]) appData.availability[selectedCalDate][appData.currentUser] = {};
@@ -1129,7 +1132,6 @@
       const keys = Object.keys(userAvail);
 
       if (keys.length === 0) {
-        // If nothing is selected yet, default to night time or first slot
         const dObj = new Date(selectedCalDate);
         const isWeekend = (dObj.getDay() === 0 || dObj.getDay() === 6);
         if (isWeekend) {
@@ -1264,7 +1266,6 @@
       openMemberModal();
     }
 
-    /* BAND PROJECTS EDITING & MODALS */
     function openBandProjectModal(bpIdToEdit = null) {
       document.getElementById('editingBpId').value = bpIdToEdit || '';
       const chips = document.querySelectorAll('#bpModalHashtags .hashtag-chip');
@@ -1383,7 +1384,6 @@
       }
     }
 
-    /* PERSONAL FOCUS EDITING & MODALS */
     function openPersonalGoalModal(pgIdToEdit = null) {
       document.getElementById('editingPgId').value = pgIdToEdit || '';
       const chips = document.querySelectorAll('#modalHashtags .hashtag-chip');
@@ -1557,7 +1557,6 @@
       });
     }
 
-    /* PRACTICE SYNC REMINDERS */
     function renderPracticePersonalSync() {
       const container = document.getElementById('practicePersonalSyncList');
       if (!container) return;
@@ -1600,7 +1599,6 @@
       renderPracticePersonalSync();
     }
 
-    /* ARRANGEMENTS CREATION & SEARCH */
     function saveArrangement() {
       const song = document.getElementById('arrSongTitle').value;
       if (!song) return alert('Song title required');
@@ -1703,7 +1701,6 @@
       });
     }
 
-    /* SHOWS CREATION, ATTENDANCE & EDITING */
     function renderAttendeesCheckboxGrid(selectedAttendees = []) {
       const grid = document.getElementById('showAttendeesGrid');
       grid.innerHTML = '';
