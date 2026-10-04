@@ -65,8 +65,8 @@
       padding: 4px 8px;
       border-radius: 12px;
       background: #3D2B22;
-      color: var(--c-skyblue);
-      cursor: pointer;
+      color: #2ECC71;
+      font-weight: bold;
     }
 
     .countdown-banner {
@@ -404,8 +404,8 @@
         <a href="https://drive.google.com/drive/u/3/my-drive" target="_blank" class="btn-icon-link">
           📁 Drive
         </a>
-        <div class="sync-badge" onclick="configureFirebase()">
-          ☁️ <span id="syncStatus">Local</span>
+        <div class="sync-badge">
+          ☁️ <span id="syncStatus">Live Cloud Sync</span>
         </div>
         <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="exportData()">💾 Backup</button>
       </div>
@@ -529,7 +529,7 @@
       </div>
 
       <div class="card">
-        <div class="card-title">🏷️️ Goals Grouped By Hashtag</div>
+        <div class="card-title">🏷 Goals Grouped By Hashtag</div>
         <div id="hashtagGroupedView"></div>
       </div>
     </div>
@@ -814,6 +814,26 @@
   </div>
 
   <script>
+    // Firebase credentials from your console screenshot
+    const firebaseConfig = {
+      apiKey: "AIzaSyByh1Z9Ji6VMFL2kZIgVfsAahmQsKFDbOs",
+      authDomain: "lazytacosscheduler-c0ddf.firebaseapp.com",
+      databaseURL: "https://lazytacosscheduler-c0ddf-default-rtdb.firebaseio.com",
+      projectId: "lazytacosscheduler-c0ddf",
+      storageBucket: "lazytacosscheduler-c0ddf.firebasestorage.app",
+      messagingSenderId: "967526397213",
+      appId: "1:967526397213:web:f5a6446e1279570385ddf4"
+    };
+
+    // Initialize Firebase Cloud Database
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database().ref('lazy_tacos_band_os');
+    } catch(e) {
+      console.log('Running in local mode', e);
+    }
+
     const HK_HOLIDAYS = {
       "2026-01-01": "New Year's Day", "2026-02-17": "Lunar New Year", "2026-02-18": "Lunar New Year",
       "2026-02-19": "Lunar New Year", "2026-04-03": "Good Friday", "2026-04-04": "Ching Ming",
@@ -850,6 +870,7 @@
     let selectedPlatform = 'WhatsApp';
 
     window.onload = function() {
+      listenToCloudDatabase();
       loadLocalStorage();
       populateUserDropdown();
       renderMemberPills();
@@ -862,8 +883,39 @@
       updateCountdownBanner();
     };
 
-    function saveState() {
+    /* REALTIME CLOUD SYNC ENGINE */
+    function listenToCloudDatabase() {
+      if (!db) return;
+      db.on('value', (snapshot) => {
+        const cloudData = snapshot.val();
+        if (cloudData) {
+          appData = cloudData;
+          if (!appData.members) appData.members = DEFAULT_MEMBERS;
+          saveState(false); // Save locally without re-uploading
+          renderAllViews();
+        }
+      });
+    }
+
+    function renderAllViews() {
+      populateUserDropdown();
+      renderMemberPills();
+      renderCalendar();
+      renderShows();
+      renderBandProjects();
+      renderPersonalSection();
+      renderArrangements();
+      renderPracticePersonalSync();
+      updateCountdownBanner();
+      const statusEl = document.getElementById('syncStatus');
+      if (statusEl) statusEl.textContent = "Live Cloud Sync";
+    }
+
+    function saveState(uploadToCloud = true) {
       localStorage.setItem('lazy_tacos_data', JSON.stringify(appData));
+      if (uploadToCloud && db) {
+        db.set(appData);
+      }
       updateCountdownBanner();
     }
 
@@ -1832,7 +1884,6 @@
 
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function formatDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-    function configureFirebase() { alert('To enable Live Sync across all members, connect your free Firebase project API key in the code!'); }
   </script>
 </body>
 </html>
