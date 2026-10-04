@@ -20,10 +20,12 @@
       --c-skyblue: #A3CFE5;     /* Sky Blue tags/subtext */
       --c-hk-pink: #FF2A75;     /* Neon Pink for HK Public Holidays */
       --c-gold: #D4AF37;        /* Metallic Gold for Gigs */
+      --c-red: #C0392B;         /* Red for high urgency */
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
     body {
       background-color: var(--c-bg);
       color: var(--c-ivory);
@@ -129,19 +131,19 @@
     }
     .nav-btn {
       flex: 1;
-      padding: 12px 4px;
+      padding: 10px 2px;
       background: none;
       border: none;
       color: #A08C82;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: bold;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
     }
-    .nav-btn .icon { font-size: 1.2rem; }
+    .nav-btn .icon { font-size: 1.1rem; }
     .nav-btn.active { color: var(--c-orange); border-top: 3px solid var(--c-orange); background: rgba(224,74,29,0.05); }
 
     .page { display: none; padding: 16px; max-width: 800px; margin: 0 auto; }
@@ -190,11 +192,14 @@
       margin-bottom: 12px;
     }
     .month-title { font-size: 1.2rem; font-weight: bold; color: var(--c-ivory); }
-    .calendar-grid {
+    
+    /* FIX 5: Strict 7-column calendar alignment for mobile */
+    .day-names-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
       text-align: center;
+      margin-bottom: 4px;
     }
     .day-name {
       font-size: 0.75rem;
@@ -202,11 +207,19 @@
       color: var(--c-skyblue);
       padding: 4px 0;
     }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
     .cal-cell {
       aspect-ratio: 1;
       background: #241812;
       border-radius: 8px;
-      padding: 4px;
+      padding: 2px;
       border: 1px solid #38251B;
       display: flex;
       flex-direction: column;
@@ -214,11 +227,12 @@
       align-items: center;
       cursor: pointer;
       position: relative;
-      min-height: 52px;
+      min-height: 48px;
+      width: 100%;
     }
     .cal-cell.other-month { opacity: 0.3; }
     .cal-cell.selected { border: 2px solid var(--c-orange); background: rgba(224,74,29,0.15); }
-    .cal-cell .date-num { font-size: 0.9rem; font-weight: bold; }
+    .cal-cell .date-num { font-size: 0.85rem; font-weight: bold; }
     
     .cal-cell.has-overlap {
       box-shadow: inset 0 0 8px rgba(224, 74, 29, 0.6);
@@ -236,10 +250,10 @@
     }
     .cal-cell.hk-holiday .date-num { color: var(--c-hk-pink); font-weight: 900; }
     .hk-tag {
-      font-size: 0.55rem;
+      font-size: 0.5rem;
       background: var(--c-hk-pink);
       color: #FFF;
-      padding: 1px 3px;
+      padding: 1px 2px;
       border-radius: 3px;
       font-weight: bold;
       white-space: nowrap;
@@ -250,9 +264,9 @@
     .gold-show-plate {
       background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
       color: #111;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: bold;
-      padding: 2px 4px;
+      padding: 2px 2px;
       border-radius: 4px;
       border: 1px solid #FFE58F;
       width: 100%;
@@ -295,7 +309,7 @@
 
     .slots-chip-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
       gap: 8px;
       margin-top: 12px;
     }
@@ -340,7 +354,7 @@
       text-align: center;
     }
 
-    .overlap-matrix { margin-top: 12px; border-top: 1px solid #3D2B22; padding-top: 12px; }
+    .overlap-matrix { margin-bottom: 16px; border-bottom: 1px solid #3D2B22; padding-bottom: 12px; }
     .overlap-hour-row {
       display: flex;
       align-items: center;
@@ -366,16 +380,20 @@
       padding: 12px;
       margin-bottom: 12px;
     }
-    .project-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .project-title { font-size: 1.05rem; font-weight: bold; color: var(--c-ivory); }
+    
     .deadline-badge {
       font-size: 0.75rem;
       font-weight: bold;
       padding: 4px 8px;
       border-radius: 12px;
+      white-space: nowrap;
     }
-    .badge-green { background: #27AE60; color: #FFF; }
+    .badge-red { background: var(--c-red); color: #FFF; }
+    .badge-orange { background: var(--c-orange); color: #FFF; }
     .badge-yellow { background: #F1C40F; color: #000; }
+    .badge-green { background: #27AE60; color: #FFF; }
 
     .toggle-group { display: flex; background: #19100C; border-radius: 8px; padding: 4px; margin-bottom: 12px; }
     .toggle-btn {
@@ -413,6 +431,16 @@
     }
     .thread-entry { border-bottom: 1px solid #38251B; padding: 4px 0; }
     .thread-time { font-size: 0.7rem; color: #888; }
+
+    .arrangement-item {
+      background: #1F150F;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #3D2B22;
+    }
+    .arrangement-title { font-weight: bold; color: var(--c-orange); font-size: 1rem; margin-bottom: 4px; }
+    .arrangement-details { font-size: 0.85rem; color: var(--c-skyblue); line-height: 1.4; }
 
     .modal-overlay {
       position: fixed;
@@ -478,13 +506,6 @@
 
   <!-- PAGE 1: PRACTICE SCHEDULER -->
   <div id="page-practice" class="page active">
-    <div class="card">
-      <div class="card-title">
-        <span>Band Members</span>
-        <button class="btn btn-outline" style="font-size:0.75rem; padding:4px 8px;" onclick="openMemberModal()">+ Edit Roster</button>
-      </div>
-      <div class="member-pills" id="memberPills"></div>
-    </div>
 
     <div class="card">
       <div class="calendar-header">
@@ -493,13 +514,27 @@
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
       </div>
 
-      <div class="calendar-grid">
+      <div class="day-names-row">
         <div class="day-name">Mon</div><div class="day-name">Tue</div>
         <div class="day-name">Wed</div><div class="day-name">Thu</div>
         <div class="day-name">Fri</div><div class="day-name">Sat</div>
         <div class="day-name">Sun</div>
       </div>
-      <div class="calendar-grid" id="calendarGrid" style="margin-top:4px;"></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <!-- FIX 3 & 4: Switched order and updated title icon & label -->
+    <div class="card">
+      <div class="card-title">👑 🏆 Best Practice Slots</div>
+      <div id="bestSlotsList" style="font-size:0.85rem;">Searching calendar...</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>Band Members</span>
+        <button class="btn btn-outline" style="font-size:0.75rem; padding:4px 8px;" onclick="openMemberModal()">+ Edit Roster</button>
+      </div>
+      <div class="member-pills" id="memberPills"></div>
     </div>
 
     <div class="card" id="dayDetailCard">
@@ -508,6 +543,15 @@
         <span id="holidayTagLabel"></span>
       </div>
 
+      <!-- FIX 7: Switched Overlap Matrix to the top half -->
+      <div class="overlap-matrix">
+        <div style="font-size:0.9rem; font-weight:bold; color:var(--c-ivory); margin-bottom:8px;">
+          👥 Band Overlap Availability
+        </div>
+        <div id="overlapBars"></div>
+      </div>
+
+      <!-- FIX 7: Select/Deselect Availability moved to bottom half for thumb reach -->
       <div style="font-size:0.85rem; color:var(--c-skyblue); margin-bottom:6px;">
         Tap hours to select/deselect availability:
       </div>
@@ -523,13 +567,6 @@
         </div>
       </div>
 
-      <div class="overlap-matrix">
-        <div style="font-size:0.9rem; font-weight:bold; color:var(--c-ivory); margin-bottom:8px;">
-          👥 Band Overlap Availability
-        </div>
-        <div id="overlapBars"></div>
-      </div>
-
       <div style="margin-top:16px; border-top:1px solid #3D2B22; padding-top:12px;">
         <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">
           📝 Practice Agenda for this Session:
@@ -538,10 +575,6 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">👑 Best Practice Slots (Top Overlap)</div>
-      <div id="bestSlotsList" style="font-size:0.85rem;">Searching calendar...</div>
-    </div>
   </div>
 
   <!-- PAGE 2a: BAND PROJECTS -->
@@ -549,7 +582,7 @@
     <div class="card">
       <div class="card-title">
         <span>🎷 Band Projects</span>
-        <button class="btn btn-orange" onclick="openProjectModal('BAND')">+ New Band Project</button>
+        <button class="btn btn-orange" onclick="openProjectModal()">+ New Band Project</button>
       </div>
       <div id="bandProjectsList"></div>
     </div>
@@ -581,6 +614,22 @@
         </div>
         <div id="quickTodosList" style="margin-top:12px;"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- FIX 2: BRAND NEW ARRANGEMENTS TAB -->
+  <div id="page-arrangements" class="page">
+    <div class="card">
+      <div class="card-title">🎵 Song Arrangements Library</div>
+      <div class="form-group">
+        <label>🔍 Quick Search Arrangements:</label>
+        <input type="text" id="arrangementSearchInput" class="form-control" placeholder="Type song name (e.g., fly, autumn, moon)..." oninput="filterArrangements()">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Results</div>
+      <div id="arrangementsList"></div>
     </div>
   </div>
 
@@ -638,6 +687,10 @@
     </button>
     <button class="nav-btn" onclick="switchPage('personal', this)">
       <span class="icon">🎯</span>Personal
+    </button>
+    <!-- FIX 2: Arrangements Tab added to navigation -->
+    <button class="nav-btn" onclick="switchPage('arrangements', this)">
+      <span class="icon">🎼</span>Arrangement
     </button>
     <button class="nav-btn" onclick="switchPage('todo', this)">
       <span class="icon">💬</span>Replies
@@ -714,16 +767,37 @@
       { id: 'm6', name: 'Dennis', role: 'Drums', color: '#D4AF37' }
     ];
 
+    /* FIX 1: Restored full coats/projects with urgency levels and tags */
+    const DEFAULT_BAND_PROJECTS = [
+      { id: 'bp1', title: '🎷 Latin Jazz Setlist Revamp', urgency: 'URGENT', deadline: '2026-10-20', tags: ['#Setlist', '#LatinJazz', '#Arrangement'], notes: 'Finalize chord changes for Afro-Cuban section.' },
+      { id: 'bp2', title: '📸 EP promo shoot & Instagram teasers', urgency: 'MEDIUM', deadline: '2026-11-05', tags: ['#Media', '#Promo', '#Socials'], notes: 'Coordinate outfits with dark brown/orange palette.' },
+      { id: 'bp3', title: '🎵 New Single Recording Session', urgency: 'LOW', deadline: '2026-12-01', tags: ['#Studio', '#Recording', '#Originals'], notes: 'Track drum and bass backings first.' }
+    ];
+
+    const DEFAULT_PERSONAL_GOALS = [
+      { id: 'pg1', title: '🎯 Master Bb Sax Solos on Fast Tempo', urgency: 'URGENT', deadline: '2026-10-15', tags: ['#Sax', '#Solos', '#Practice'], notes: 'Focus on 16th note runs on Fly Me To The Moon.' },
+      { id: 'pg2', title: '🎹 Transcribe Keys voicings for Latin tunes', urgency: 'MEDIUM', deadline: '2026-10-30', tags: ['#Keys', '#Voicings'], notes: 'Listen to Michel Camilo live versions.' }
+    ];
+
+    /* FIX 2: Pre-populated arrangements library with search data */
+    const DEFAULT_ARRANGEMENTS = [
+      { id: 'ar1', song: 'Fly Me To The Moon', key: 'C Major', tempo: '130 BPM (Samba)', notes: 'Intro: Bass groove + Keys. Vocal enter bar 9. Sax solo over 2nd chorus with 4-bar drum trading.' },
+      { id: 'ar2', song: 'Come Fly With Me', key: 'Ab Major', tempo: '115 BPM (Medium Swing)', notes: 'Full horn hit intro. Vocal lead. Guitar comping on bridge.' },
+      { id: 'ar3', song: 'Autumn Leaves', key: 'G Minor', tempo: '100 BPM (Bossa Nova)', notes: 'Start with solo guitar intro. Flute/Sax melody unison.' },
+      { id: 'ar4', song: 'Take Five', key: 'E Minor', tempo: '174 BPM (5/4 Swing)', notes: '5/4 drum vamp intro. Sax melody lead. Piano solo in 5/4.' }
+    ];
+
     let appData = {
       members: DEFAULT_MEMBERS,
       currentUser: 'm1',
       availability: {},
       agendas: {},
       shows: [],
-      bandProjects: [],
-      personalGoals: [],
+      bandProjects: DEFAULT_BAND_PROJECTS,
+      personalGoals: DEFAULT_PERSONAL_GOALS,
       quickTodos: [],
-      threads: []
+      threads: [],
+      arrangements: DEFAULT_ARRANGEMENTS
     };
 
     let currentDate = new Date();
@@ -736,6 +810,9 @@
       renderMemberPills();
       renderCalendar();
       renderShows();
+      renderBandProjects();
+      renderPersonalSection();
+      renderArrangements();
       updateCountdownBanner();
     };
 
@@ -747,7 +824,12 @@
     function loadLocalStorage() {
       const saved = localStorage.getItem('lazy_tacos_data');
       if (saved) {
-        try { appData = JSON.parse(saved); } catch(e){}
+        try { 
+          appData = JSON.parse(saved);
+          if (!appData.bandProjects) appData.bandProjects = DEFAULT_BAND_PROJECTS;
+          if (!appData.personalGoals) appData.personalGoals = DEFAULT_PERSONAL_GOALS;
+          if (!appData.arrangements) appData.arrangements = DEFAULT_ARRANGEMENTS;
+        } catch(e){}
       }
     }
 
@@ -786,6 +868,7 @@
       if (pageId === 'shows') renderShows();
       if (pageId === 'band-projects') renderBandProjects();
       if (pageId === 'personal') renderPersonalSection();
+      if (pageId === 'arrangements') renderArrangements();
       if (pageId === 'todo') renderThreads();
     }
 
@@ -829,7 +912,7 @@
         if (isHkHoliday) {
           innerHTML += `<div class="hk-tag">🇭🇰 ${HK_HOLIDAYS[dateStr]}</div>`;
         } else if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          innerHTML += `<div style="font-size:0.6rem;">👑 Full Band</div>`;
+          innerHTML += `<div style="font-size:0.55rem;">👑 Full Band</div>`;
         }
 
         const dayShow = appData.shows.find(s => s.date === dateStr);
@@ -852,9 +935,14 @@
       renderCalendar();
     }
 
+    /* FIX 6: Auto-scroll down to availability selection on day click */
     function selectCalendarDate(dateStr) {
       selectedCalDate = dateStr;
       renderCalendar();
+      const detailCard = document.getElementById('dayDetailCard');
+      if (detailCard) {
+        detailCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function renderDayDetails(dateStr) {
@@ -1028,6 +1116,184 @@
       openMemberModal();
     }
 
+    /* FIX 1: Restored Band Projects Rendering */
+    function renderBandProjects() {
+      const container = document.getElementById('bandProjectsList');
+      container.innerHTML = '';
+
+      if (!appData.bandProjects || appData.bandProjects.length === 0) {
+        container.innerHTML = '<div style="color:#888;">No active band projects.</div>';
+        return;
+      }
+
+      appData.bandProjects.forEach((p, idx) => {
+        let badgeClass = 'badge-green';
+        if (p.urgency === 'URGENT') badgeClass = 'badge-red';
+        if (p.urgency === 'MEDIUM') badgeClass = 'badge-orange';
+        if (p.urgency === 'LOW') badgeClass = 'badge-yellow';
+
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.innerHTML = `
+          <div class="project-header">
+            <div class="project-title">${p.title}</div>
+            <span class="deadline-badge ${badgeClass}">${p.urgency} | ${p.deadline}</span>
+          </div>
+          <div class="hashtag-cloud">
+            ${p.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+          </div>
+          <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${p.notes}</div>
+          <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:8px;" onclick="deleteBandProject(${idx})">🗑️ Delete</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function deleteBandProject(idx) {
+      appData.bandProjects.splice(idx, 1);
+      saveState();
+      renderBandProjects();
+    }
+
+    function switchPersonalSubTab(type) {
+      document.getElementById('toggleGoalBtn').classList.toggle('active', type === 'GOALS');
+      document.getElementById('toggleTodoBtn').classList.toggle('active', type === 'TODOS');
+      document.getElementById('personalGoalsSection').style.display = type === 'GOALS' ? 'block' : 'none';
+      document.getElementById('personalTodosSection').style.display = type === 'TODOS' ? 'block' : 'none';
+    }
+
+    /* FIX 1: Restored Personal Focus Goals Rendering */
+    function renderPersonalSection() {
+      const goalsContainer = document.getElementById('personalGoalsList');
+      goalsContainer.innerHTML = '';
+
+      if (!appData.personalGoals || appData.personalGoals.length === 0) {
+        goalsContainer.innerHTML = '<div style="color:#888;">No personal focus goals.</div>';
+      } else {
+        appData.personalGoals.forEach((g, idx) => {
+          let badgeClass = 'badge-green';
+          if (g.urgency === 'URGENT') badgeClass = 'badge-red';
+          if (g.urgency === 'MEDIUM') badgeClass = 'badge-orange';
+
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <div class="project-header">
+              <div class="project-title">${g.title}</div>
+              <span class="deadline-badge ${badgeClass}">${g.urgency} | ${g.deadline}</span>
+            </div>
+            <div class="hashtag-cloud">
+              ${g.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+            </div>
+            <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${g.notes}</div>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:8px;" onclick="deletePersonalGoal(${idx})">🗑️ Delete</button>
+          `;
+          goalsContainer.appendChild(card);
+        });
+      }
+
+      const todosList = document.getElementById('quickTodosList');
+      todosList.innerHTML = '';
+      appData.quickTodos.forEach((td, i) => {
+        const div = document.createElement('div');
+        div.style.padding = '6px 0';
+        div.style.borderBottom = '1px solid #38251B';
+        div.innerHTML = `• ${td} <button class="btn btn-outline" style="font-size:0.6rem; padding:1px 4px; float:right;" onclick="appData.quickTodos.splice(${i},1); saveState(); renderPersonalSection();">✕</button>`;
+        todosList.appendChild(div);
+      });
+    }
+
+    function deletePersonalGoal(idx) {
+      appData.personalGoals.splice(idx, 1);
+      saveState();
+      renderPersonalSection();
+    }
+
+    function addQuickTodo() {
+      const val = document.getElementById('quickTodoInput').value;
+      if (!val) return;
+      appData.quickTodos.push(val);
+      document.getElementById('quickTodoInput').value = '';
+      saveState();
+      renderPersonalSection();
+    }
+
+    /* FIX 2: Live Search for Song Arrangements */
+    function renderArrangements(filterQuery = '') {
+      const list = document.getElementById('arrangementsList');
+      list.innerHTML = '';
+
+      const matches = appData.arrangements.filter(a => 
+        a.song.toLowerCase().includes(filterQuery.toLowerCase()) || 
+        a.notes.toLowerCase().includes(filterQuery.toLowerCase()) ||
+        a.key.toLowerCase().includes(filterQuery.toLowerCase())
+      );
+
+      if (matches.length === 0) {
+        list.innerHTML = `<div style="color:#888;">No arrangements found matching "${filterQuery}".</div>`;
+        return;
+      }
+
+      matches.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'arrangement-item';
+        div.innerHTML = `
+          <div class="arrangement-title">🎼 ${a.song}</div>
+          <div class="arrangement-details">
+            <strong>Key:</strong> ${a.key} | <strong>Tempo/Style:</strong> ${a.tempo}<br>
+            <strong>Notes:</strong> ${a.notes}
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function filterArrangements() {
+      const query = document.getElementById('arrangementSearchInput').value;
+      renderArrangements(query);
+    }
+
+    function selectPlatform(el, plat) {
+      document.querySelectorAll('#platformPicker .hashtag-chip').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedPlatform = plat;
+    }
+
+    function addFollowupThread() {
+      const party = document.getElementById('todoPartyInput').value;
+      const remark = document.getElementById('todoRemarkInput').value;
+      if (!party) return alert('Party name required');
+
+      appData.threads.push({
+        id: 't' + Date.now(),
+        platform: selectedPlatform,
+        party,
+        logs: [{ date: new Date().toLocaleDateString(), text: remark }]
+      });
+
+      saveState();
+      renderThreads();
+    }
+
+    function renderThreads() {
+      const list = document.getElementById('followupThreadsList');
+      list.innerHTML = '';
+      appData.threads.forEach((t, idx) => {
+        const div = document.createElement('div');
+        div.className = 'project-card';
+        div.innerHTML = `
+          <div class="project-header">
+            <div class="project-title">${t.platform === 'WhatsApp' ? '💬' : '📧'} ${t.party}</div>
+            <button class="btn btn-outline" style="font-size:0.6rem;" onclick="appData.threads.splice(${idx},1); saveState(); renderThreads();">Delete</button>
+          </div>
+          <div class="thread-box">
+            ${t.logs.map(l => `<div class="thread-entry"><span class="thread-time">${l.date}:</span>${l.text}</div>`).join('')}
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
     function openShowModal() { document.getElementById('showModal').classList.add('active'); }
 
     function saveShow() {
@@ -1107,79 +1373,6 @@
         const diffDays = Math.ceil((next.dObj - now) / (1000 * 60 * 60 * 24));
         banner.innerHTML = `🎺 Next Show in ${diffDays} day(s): <strong>${next.venue}</strong> (${next.date})`;
       }
-    }
-
-    function renderBandProjects() {
-      document.getElementById('bandProjectsList').innerHTML = '<div style="color:#888;">No active band projects.</div>';
-    }
-
-    function switchPersonalSubTab(type) {
-      document.getElementById('toggleGoalBtn').classList.toggle('active', type === 'GOALS');
-      document.getElementById('toggleTodoBtn').classList.toggle('active', type === 'TODOS');
-      document.getElementById('personalGoalsSection').style.display = type === 'GOALS' ? 'block' : 'none';
-      document.getElementById('personalTodosSection').style.display = type === 'TODOS' ? 'block' : 'none';
-    }
-
-    function renderPersonalSection() {
-      const list = document.getElementById('quickTodosList');
-      list.innerHTML = '';
-      appData.quickTodos.forEach((td, i) => {
-        const div = document.createElement('div');
-        div.style.padding = '6px 0';
-        div.style.borderBottom = '1px solid #38251B';
-        div.innerHTML = `• ${td} <button class="btn btn-outline" style="font-size:0.6rem; padding:1px 4px; float:right;" onclick="appData.quickTodos.splice(${i},1); saveState(); renderPersonalSection();">✕</button>`;
-        list.appendChild(div);
-      });
-    }
-
-    function addQuickTodo() {
-      const val = document.getElementById('quickTodoInput').value;
-      if (!val) return;
-      appData.quickTodos.push(val);
-      document.getElementById('quickTodoInput').value = '';
-      saveState();
-      renderPersonalSection();
-    }
-
-    function selectPlatform(el, plat) {
-      document.querySelectorAll('#platformPicker .hashtag-chip').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-      selectedPlatform = plat;
-    }
-
-    function addFollowupThread() {
-      const party = document.getElementById('todoPartyInput').value;
-      const remark = document.getElementById('todoRemarkInput').value;
-      if (!party) return alert('Party name required');
-
-      appData.threads.push({
-        id: 't' + Date.now(),
-        platform: selectedPlatform,
-        party,
-        logs: [{ date: new Date().toLocaleDateString(), text: remark }]
-      });
-
-      saveState();
-      renderThreads();
-    }
-
-    function renderThreads() {
-      const list = document.getElementById('followupThreadsList');
-      list.innerHTML = '';
-      appData.threads.forEach((t, idx) => {
-        const div = document.createElement('div');
-        div.className = 'project-card';
-        div.innerHTML = `
-          <div class="project-header">
-            <div class="project-title">${t.platform === 'WhatsApp' ? '💬' : '📧'} ${t.party}</div>
-            <button class="btn btn-outline" style="font-size:0.6rem;" onclick="appData.threads.splice(${idx},1); saveState(); renderThreads();">Delete</button>
-          </div>
-          <div class="thread-box">
-            ${t.logs.map(l => `<div class="thread-entry"><span class="thread-time">${l.date}:</span>${l.text}</div>`).join('')}
-          </div>
-        `;
-        list.appendChild(div);
-      });
     }
 
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
