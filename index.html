@@ -12,14 +12,14 @@
   <style>
     :root {
       --c-bg: #241812;          /* Dark Brown base */
-      --c-card: #2E2019;        /* Slightly lighter brown card bg */
-      --c-ivory: #FAF5E8;       /* Ivory text / high contrast */
-      --c-orange: #E04A1D;      /* Bold Orange active/accent */
-      --c-cobalt: #1C3F80;      /* Cobalt Blue buttons/headers */
+      --c-card: #2E2019;        /* Lighter brown card bg */
+      --c-ivory: #FAF5E8;       /* Ivory text */
+      --c-orange: #E04A1D;      /* Bold Orange accent */
+      --c-cobalt: #1C3F80;      /* Cobalt Blue */
       --c-olive: #7F8752;       /* Olive Green success */
-      --c-skyblue: #A3CFE5;     /* Sky Blue tags/subtext */
-      --c-hk-pink: #FF2A75;     /* Neon Pink for HK Public Holidays */
-      --c-gold: #D4AF37;        /* Metallic Gold for Gigs */
+      --c-skyblue: #A3CFE5;     /* Sky Blue tags */
+      --c-hk-pink: #FF2A75;     /* Neon Pink for HK Holidays */
+      --c-gold: #D4AF37;        /* Gold for Gigs */
       --c-red: #C0392B;         /* Red for high urgency */
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -44,20 +44,8 @@
       border-bottom: 2px solid #3D2B22;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    .band-title {
-      font-size: 1.25rem;
-      font-weight: 900;
-      color: var(--c-orange);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .band-title { font-size: 1.25rem; font-weight: 900; color: var(--c-orange); display: flex; align-items: center; gap: 6px; }
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .btn-icon-link {
       background: var(--c-cobalt);
@@ -119,9 +107,7 @@
 
     .nav-tabs {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       background: #140C08;
       display: flex;
       justify-content: space-around;
@@ -185,36 +171,29 @@
     .btn-olive { background: var(--c-olive); color: #FFF; }
     .btn-outline { background: transparent; border: 1px solid #553C30; color: var(--c-ivory); }
 
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .month-title { font-size: 1.2rem; font-weight: bold; color: var(--c-ivory); }
     
-    /* FIX 5: Strict 7-column calendar alignment for mobile */
-    .day-names-row {
+    /* STRICT MOBILE GRID ALIGNMENT FIX */
+    .calendar-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .day-names-row, .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
-      text-align: center;
-      margin-bottom: 4px;
+      width: 100%;
+      table-layout: fixed;
     }
     .day-name {
       font-size: 0.75rem;
       font-weight: bold;
       color: var(--c-skyblue);
+      text-align: center;
       padding: 4px 0;
     }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      text-align: center;
-    }
-
     .cal-cell {
       aspect-ratio: 1;
       background: #241812;
@@ -228,26 +207,17 @@
       cursor: pointer;
       position: relative;
       min-height: 48px;
+      overflow: hidden;
       width: 100%;
     }
     .cal-cell.other-month { opacity: 0.3; }
     .cal-cell.selected { border: 2px solid var(--c-orange); background: rgba(224,74,29,0.15); }
-    .cal-cell .date-num { font-size: 0.85rem; font-weight: bold; }
+    .cal-cell .date-num { font-size: 0.85rem; font-weight: bold; line-height: 1; margin-top: 2px; }
     
-    .cal-cell.has-overlap {
-      box-shadow: inset 0 0 8px rgba(224, 74, 29, 0.6);
-      border-color: var(--c-orange);
-    }
-    .cal-cell.full-band {
-      box-shadow: 0 0 10px rgba(127, 135, 82, 0.8);
-      border: 2px solid var(--c-olive);
-      background: rgba(127, 135, 82, 0.2);
-    }
+    .cal-cell.has-overlap { box-shadow: inset 0 0 8px rgba(224, 74, 29, 0.6); border-color: var(--c-orange); }
+    .cal-cell.full-band { box-shadow: 0 0 10px rgba(127, 135, 82, 0.8); border: 2px solid var(--c-olive); background: rgba(127, 135, 82, 0.2); }
     
-    .cal-cell.hk-holiday {
-      background: #40061A !important;
-      border: 1.5px solid var(--c-hk-pink) !important;
-    }
+    .cal-cell.hk-holiday { background: #40061A !important; border: 1.5px solid var(--c-hk-pink) !important; }
     .cal-cell.hk-holiday .date-num { color: var(--c-hk-pink); font-weight: 900; }
     .hk-tag {
       font-size: 0.5rem;
@@ -258,41 +228,22 @@
       font-weight: bold;
       white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
       max-width: 100%;
     }
 
     .gold-show-plate {
       background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
       color: #111;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: bold;
-      padding: 2px 2px;
-      border-radius: 4px;
-      border: 1px solid #FFE58F;
+      padding: 1px 2px;
+      border-radius: 3px;
       width: 100%;
       text-align: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      position: relative;
-    }
-    .gold-show-plate.confirmed::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(60deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 80%);
-      transform: rotate(30deg);
-      animation: shimmerSweep 3s infinite;
-    }
-    @keyframes shimmerSweep {
-      0% { transform: translateX(-100%) rotate(30deg); }
-      100% { transform: translateX(100%) rotate(30deg); }
-    }
-    .gold-show-plate.tbc {
-      background: transparent;
-      border: 1px dashed #D4AF37;
-      color: #D4AF37;
     }
 
     .member-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -326,52 +277,24 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      border: 2px solid transparent;
-      min-height: 48px;
-      user-select: none;
+      min-height: 44px;
     }
-    .slot-chip.selected-green {
-      background: #2ECC71 !important;
-      color: #052B14 !important;
-      border-color: #27AE60;
-    }
+    .slot-chip.selected-green { background: #2ECC71 !important; color: #052B14 !important; border-color: #27AE60; }
 
-    .status-picker-bar {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .status-picker-bar { display: flex; gap: 8px; margin-top: 12px; }
     .status-opt-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #553C30;
-      background: #1F150F;
-      color: var(--c-ivory);
-      font-size: 0.85rem;
-      font-weight: bold;
-      cursor: pointer;
-      text-align: center;
+      flex: 1; padding: 10px; border-radius: 8px;
+      border: 1px solid #553C30; background: #1F150F;
+      color: var(--c-ivory); font-size: 0.85rem; font-weight: bold;
+      cursor: pointer; text-align: center;
     }
 
     .overlap-matrix { margin-bottom: 16px; border-bottom: 1px solid #3D2B22; padding-bottom: 12px; }
-    .overlap-hour-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 0.8rem;
-    }
+    .overlap-hour-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.8rem; }
     .overlap-hour-label { width: 60px; font-weight: bold; color: var(--c-skyblue); }
     .overlap-bars-container { flex-grow: 1; display: flex; gap: 4px; }
-    .member-bar-segment {
-      height: 18px;
-      border-radius: 3px;
-      flex: 1;
-      opacity: 0.2;
-    }
+    .member-bar-segment { height: 18px; border-radius: 3px; flex: 1; opacity: 0.2; }
     .member-bar-segment.firm { opacity: 1.0; }
-    .member-bar-segment.tbc { opacity: 0.8; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px); }
-    .member-bar-segment.subj { opacity: 0.6; border: 1px dashed #FFF; }
 
     .project-card {
       background: #281B15;
@@ -380,15 +303,12 @@
       padding: 12px;
       margin-bottom: 12px;
     }
+    .project-card.completed { opacity: 0.5; text-decoration: line-through; }
     .project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .project-title { font-size: 1.05rem; font-weight: bold; color: var(--c-ivory); }
+    .project-title { font-size: 1.05rem; font-weight: bold; color: var(--c-ivory); display: flex; align-items: center; gap: 8px; }
     
     .deadline-badge {
-      font-size: 0.75rem;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 12px;
-      white-space: nowrap;
+      font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 12px; white-space: nowrap;
     }
     .badge-red { background: var(--c-red); color: #FFF; }
     .badge-orange { background: var(--c-orange); color: #FFF; }
@@ -397,84 +317,44 @@
 
     .toggle-group { display: flex; background: #19100C; border-radius: 8px; padding: 4px; margin-bottom: 12px; }
     .toggle-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      background: none;
-      color: var(--c-skyblue);
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
+      flex: 1; padding: 8px; border: none; background: none; color: var(--c-skyblue); font-weight: bold; border-radius: 6px; cursor: pointer;
     }
     .toggle-btn.active { background: var(--c-cobalt); color: #FFF; }
 
     .hashtag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
     .hashtag-chip {
-      background: #1F150F;
-      border: 1px solid #553C30;
-      color: var(--c-skyblue);
-      padding: 4px 10px;
-      border-radius: 14px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      cursor: pointer;
+      background: #1F150F; border: 1px solid #553C30; color: var(--c-skyblue);
+      padding: 4px 10px; border-radius: 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
     }
     .hashtag-chip.selected { background: var(--c-orange); color: #FFF; border-color: var(--c-orange); }
 
-    .thread-box {
-      background: #1F150F;
-      border-left: 3px solid var(--c-orange);
-      padding: 8px 12px;
-      margin-top: 8px;
-      border-radius: 0 6px 6px 0;
-      font-size: 0.85rem;
-    }
-    .thread-entry { border-bottom: 1px solid #38251B; padding: 4px 0; }
-    .thread-time { font-size: 0.7rem; color: #888; }
-
-    .arrangement-item {
-      background: #1F150F;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border: 1px solid #3D2B22;
-    }
+    .arrangement-item { background: #1F150F; border-radius: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid #3D2B22; }
     .arrangement-title { font-weight: bold; color: var(--c-orange); font-size: 1rem; margin-bottom: 4px; }
     .arrangement-details { font-size: 0.85rem; color: var(--c-skyblue); line-height: 1.4; }
 
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 16px;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
-      background: var(--c-card);
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      border: 1px solid #553C30;
+      background: var(--c-card); border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border: 1px solid #553C30;
     }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--c-skyblue); margin-bottom: 4px; font-weight: bold; }
     .form-control {
-      width: 100%;
-      padding: 10px;
-      background: #19100C;
-      border: 1px solid #553C30;
-      border-radius: 8px;
-      color: var(--c-ivory);
-      font-size: 0.95rem;
+      width: 100%; padding: 10px; background: #19100C; border: 1px solid #553C30; border-radius: 8px; color: var(--c-ivory); font-size: 0.95rem;
     }
     textarea.form-control { resize: vertical; min-height: 60px; }
+
+    .sync-personal-reminders {
+      background: #1A120D;
+      border: 1px dashed var(--c-orange);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -514,16 +394,17 @@
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
       </div>
 
-      <div class="day-names-row">
-        <div class="day-name">Mon</div><div class="day-name">Tue</div>
-        <div class="day-name">Wed</div><div class="day-name">Thu</div>
-        <div class="day-name">Fri</div><div class="day-name">Sat</div>
-        <div class="day-name">Sun</div>
+      <div class="calendar-container">
+        <div class="day-names-row">
+          <div class="day-name">Mon</div><div class="day-name">Tue</div>
+          <div class="day-name">Wed</div><div class="day-name">Thu</div>
+          <div class="day-name">Fri</div><div class="day-name">Sat</div>
+          <div class="day-name">Sun</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
       </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
     </div>
 
-    <!-- FIX 3 & 4: Switched order and updated title icon & label -->
     <div class="card">
       <div class="card-title">👑 🏆 Best Practice Slots</div>
       <div id="bestSlotsList" style="font-size:0.85rem;">Searching calendar...</div>
@@ -543,7 +424,6 @@
         <span id="holidayTagLabel"></span>
       </div>
 
-      <!-- FIX 7: Switched Overlap Matrix to the top half -->
       <div class="overlap-matrix">
         <div style="font-size:0.9rem; font-weight:bold; color:var(--c-ivory); margin-bottom:8px;">
           👥 Band Overlap Availability
@@ -551,7 +431,6 @@
         <div id="overlapBars"></div>
       </div>
 
-      <!-- FIX 7: Select/Deselect Availability moved to bottom half for thumb reach -->
       <div style="font-size:0.85rem; color:var(--c-skyblue); margin-bottom:6px;">
         Tap hours to select/deselect availability:
       </div>
@@ -568,6 +447,12 @@
       </div>
 
       <div style="margin-top:16px; border-top:1px solid #3D2B22; padding-top:12px;">
+        <!-- SYNCED PERSONAL REMINDERS FOR PRACTICE SESSION -->
+        <div class="sync-personal-reminders">
+          <div style="font-weight:bold; color:var(--c-orange); margin-bottom:4px;">💡 Synced Personal Focus & To-Dos Reminders:</div>
+          <div id="practicePersonalSyncList">Loading personal goals...</div>
+        </div>
+
         <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">
           📝 Practice Agenda for this Session:
         </label>
@@ -582,7 +467,6 @@
     <div class="card">
       <div class="card-title">
         <span>🎷 Band Projects</span>
-        <button class="btn btn-orange" onclick="openProjectModal()">+ New Band Project</button>
       </div>
       <div id="bandProjectsList"></div>
     </div>
@@ -591,17 +475,23 @@
   <!-- PAGE 2b: PERSONAL PRACTICE & TO-DO -->
   <div id="page-personal" class="page">
     <div class="toggle-group">
-      <button class="toggle-btn active" id="toggleGoalBtn" onclick="switchPersonalSubTab('GOALS')">🎯 Practice Goals</button>
+      <button class="toggle-btn active" id="toggleGoalBtn" onclick="switchPersonalSubTab('GOALS')">🎯 Personal Focus Areas</button>
       <button class="toggle-btn" id="toggleTodoBtn" onclick="switchPersonalSubTab('TODOS')">⚡ Quick To-Dos</button>
     </div>
 
     <div id="personalGoalsSection">
       <div class="card">
         <div class="card-title">
-          <span>Personal Focus Areas</span>
+          <span>Personal Focus Goals</span>
           <button class="btn btn-cobalt" onclick="openPersonalGoalModal()">+ Add Focus</button>
         </div>
         <div id="personalGoalsList"></div>
+      </div>
+
+      <!-- HASHTAG GROUPED CATEGORY VIEW -->
+      <div class="card">
+        <div class="card-title">🏷️ Goals Grouped By Hashtag</div>
+        <div id="hashtagGroupedView"></div>
       </div>
     </div>
 
@@ -617,7 +507,7 @@
     </div>
   </div>
 
-  <!-- FIX 2: BRAND NEW ARRANGEMENTS TAB -->
+  <!-- ARRANGEMENTS TAB -->
   <div id="page-arrangements" class="page">
     <div class="card">
       <div class="card-title">🎵 Song Arrangements Library</div>
@@ -688,7 +578,6 @@
     <button class="nav-btn" onclick="switchPage('personal', this)">
       <span class="icon">🎯</span>Personal
     </button>
-    <!-- FIX 2: Arrangements Tab added to navigation -->
     <button class="nav-btn" onclick="switchPage('arrangements', this)">
       <span class="icon">🎼</span>Arrangement
     </button>
@@ -701,6 +590,51 @@
   </nav>
 
   <!-- MODALS -->
+  <div class="modal-overlay" id="personalGoalModal">
+    <div class="modal-content">
+      <div class="card-title">Add Personal Focus Item</div>
+      
+      <div class="form-group">
+        <label>Goal Description:</label>
+        <input type="text" id="goalTitleInput" class="form-control" placeholder="e.g. 2-5-1 of Black Orpheus bar 3">
+      </div>
+
+      <div class="form-group">
+        <label>Select Hashtag(s):</label>
+        <div class="hashtag-cloud" id="modalHashtags">
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Improv</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Time/Tight</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Vocab</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Composition</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Arrangements</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#ShortSections</span>
+          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Performance-related</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Quick Timeline Finish:</label>
+        <select id="goalQuickTimeline" class="form-control" onchange="toggleCustomDateInput(this.value)">
+          <option value="今すぐ">⚡ 今すぐ</option>
+          <option value="返屋企">🏠 返屋企</option>
+          <option value="下次show前">🎺 下次show前</option>
+          <option value="下次團練">📅 下次團練</option>
+          <option value="CUSTOM">📅 Custom Calendar Date...</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="customDateGroup" style="display:none;">
+        <label>Select Target Date:</label>
+        <input type="date" id="goalCustomDate" class="form-control">
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button class="btn btn-orange" style="flex:1;" onclick="savePersonalGoal()">Save Goal</button>
+        <button class="btn btn-outline" onclick="closeModal('personalGoalModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="showModal">
     <div class="modal-content">
       <div class="card-title">Add / Edit Show</div>
@@ -767,24 +701,20 @@
       { id: 'm6', name: 'Dennis', role: 'Drums', color: '#D4AF37' }
     ];
 
-    /* FIX 1: Restored full coats/projects with urgency levels and tags */
     const DEFAULT_BAND_PROJECTS = [
-      { id: 'bp1', title: '🎷 Latin Jazz Setlist Revamp', urgency: 'URGENT', deadline: '2026-10-20', tags: ['#Setlist', '#LatinJazz', '#Arrangement'], notes: 'Finalize chord changes for Afro-Cuban section.' },
-      { id: 'bp2', title: '📸 EP promo shoot & Instagram teasers', urgency: 'MEDIUM', deadline: '2026-11-05', tags: ['#Media', '#Promo', '#Socials'], notes: 'Coordinate outfits with dark brown/orange palette.' },
-      { id: 'bp3', title: '🎵 New Single Recording Session', urgency: 'LOW', deadline: '2026-12-01', tags: ['#Studio', '#Recording', '#Originals'], notes: 'Track drum and bass backings first.' }
+      { id: 'bp1', title: '🎷 Latin Jazz Setlist Revamp', urgency: 'URGENT', deadline: '2026-10-20', tags: ['#Setlist', '#LatinJazz'], notes: 'Finalize chord changes for Afro-Cuban section.' },
+      { id: 'bp2', title: '📸 EP promo shoot & Instagram teasers', urgency: 'MEDIUM', deadline: '2026-11-05', tags: ['#Media', '#Promo'], notes: 'Coordinate outfits with dark brown/orange palette.' }
     ];
 
     const DEFAULT_PERSONAL_GOALS = [
-      { id: 'pg1', title: '🎯 Master Bb Sax Solos on Fast Tempo', urgency: 'URGENT', deadline: '2026-10-15', tags: ['#Sax', '#Solos', '#Practice'], notes: 'Focus on 16th note runs on Fly Me To The Moon.' },
-      { id: 'pg2', title: '🎹 Transcribe Keys voicings for Latin tunes', urgency: 'MEDIUM', deadline: '2026-10-30', tags: ['#Keys', '#Voicings'], notes: 'Listen to Michel Camilo live versions.' }
+      { id: 'pg1', title: '2-5-1 of Black Orpheus bar 3', deadlineText: '今すぐ', targetDate: '2026-10-05', tags: ['#Improv', '#ShortSections'], completed: false },
+      { id: 'pg2', title: 'Master 16th note runs on Fly Me To The Moon', deadlineText: '下次show前', targetDate: '2026-10-15', tags: ['#Time/Tight', '#Performance-related'], completed: false }
     ];
 
-    /* FIX 2: Pre-populated arrangements library with search data */
     const DEFAULT_ARRANGEMENTS = [
       { id: 'ar1', song: 'Fly Me To The Moon', key: 'C Major', tempo: '130 BPM (Samba)', notes: 'Intro: Bass groove + Keys. Vocal enter bar 9. Sax solo over 2nd chorus with 4-bar drum trading.' },
       { id: 'ar2', song: 'Come Fly With Me', key: 'Ab Major', tempo: '115 BPM (Medium Swing)', notes: 'Full horn hit intro. Vocal lead. Guitar comping on bridge.' },
-      { id: 'ar3', song: 'Autumn Leaves', key: 'G Minor', tempo: '100 BPM (Bossa Nova)', notes: 'Start with solo guitar intro. Flute/Sax melody unison.' },
-      { id: 'ar4', song: 'Take Five', key: 'E Minor', tempo: '174 BPM (5/4 Swing)', notes: '5/4 drum vamp intro. Sax melody lead. Piano solo in 5/4.' }
+      { id: 'ar3', song: 'Autumn Leaves', key: 'G Minor', tempo: '100 BPM (Bossa Nova)', notes: 'Start with solo guitar intro. Flute/Sax melody unison.' }
     ];
 
     let appData = {
@@ -813,6 +743,7 @@
       renderBandProjects();
       renderPersonalSection();
       renderArrangements();
+      renderPracticePersonalSync();
       updateCountdownBanner();
     };
 
@@ -869,6 +800,7 @@
       if (pageId === 'band-projects') renderBandProjects();
       if (pageId === 'personal') renderPersonalSection();
       if (pageId === 'arrangements') renderArrangements();
+      if (pageId === 'practice') renderPracticePersonalSync();
       if (pageId === 'todo') renderThreads();
     }
 
@@ -935,7 +867,6 @@
       renderCalendar();
     }
 
-    /* FIX 6: Auto-scroll down to availability selection on day click */
     function selectCalendarDate(dateStr) {
       selectedCalDate = dateStr;
       renderCalendar();
@@ -978,6 +909,7 @@
 
       document.getElementById('sessionAgendaInput').value = appData.agendas[dateStr] || '';
       renderOverlapBars(dateStr, hours);
+      renderPracticePersonalSync();
     }
 
     function toggleHourSlot(dateStr, hour) {
@@ -1027,8 +959,6 @@
 
           const mStatus = dayData[m.id] ? dayData[m.id][h] : null;
           if (mStatus === 'FIRM') seg.classList.add('firm');
-          if (mStatus === 'TBC') seg.classList.add('tbc');
-          if (mStatus === 'SUBJ') seg.classList.add('subj');
 
           bars.appendChild(seg);
         });
@@ -1116,81 +1046,93 @@
       openMemberModal();
     }
 
-    /* FIX 1: Restored Band Projects Rendering */
-    function renderBandProjects() {
-      const container = document.getElementById('bandProjectsList');
-      container.innerHTML = '';
+    /* PERSONAL FOCUS MODAL & LOGIC */
+    function openPersonalGoalModal() {
+      document.getElementById('personalGoalModal').classList.add('active');
+    }
 
-      if (!appData.bandProjects || appData.bandProjects.length === 0) {
-        container.innerHTML = '<div style="color:#888;">No active band projects.</div>';
-        return;
+    function toggleCustomDateInput(val) {
+      document.getElementById('customDateGroup').style.display = val === 'CUSTOM' ? 'block' : 'none';
+    }
+
+    function savePersonalGoal() {
+      const title = document.getElementById('goalTitleInput').value;
+      if (!title) return alert('Goal description required');
+
+      const selectedChips = document.querySelectorAll('#modalHashtags .hashtag-chip.selected');
+      const tags = Array.from(selectedChips).map(c => c.textContent);
+
+      const timelineSelect = document.getElementById('goalQuickTimeline').value;
+      let targetDate = '9999-12-31';
+      let deadlineText = timelineSelect;
+
+      if (timelineSelect === 'CUSTOM') {
+        targetDate = document.getElementById('goalCustomDate').value || '9999-12-31';
+        deadlineText = targetDate;
+      } else {
+        if (timelineSelect === '今すぐ') targetDate = formatDate(new Date());
+        if (timelineSelect === '返屋企') targetDate = formatDate(new Date(Date.now() + 86400000));
+        if (timelineSelect === '下次團練') targetDate = formatDate(new Date(Date.now() + 86400000 * 3));
+        if (timelineSelect === '下次show前') targetDate = formatDate(new Date(Date.now() + 86400000 * 7));
       }
 
-      appData.bandProjects.forEach((p, idx) => {
-        let badgeClass = 'badge-green';
-        if (p.urgency === 'URGENT') badgeClass = 'badge-red';
-        if (p.urgency === 'MEDIUM') badgeClass = 'badge-orange';
-        if (p.urgency === 'LOW') badgeClass = 'badge-yellow';
-
-        const card = document.createElement('div');
-        card.className = 'project-card';
-        card.innerHTML = `
-          <div class="project-header">
-            <div class="project-title">${p.title}</div>
-            <span class="deadline-badge ${badgeClass}">${p.urgency} | ${p.deadline}</span>
-          </div>
-          <div class="hashtag-cloud">
-            ${p.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
-          </div>
-          <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${p.notes}</div>
-          <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:8px;" onclick="deleteBandProject(${idx})">🗑️ Delete</button>
-        `;
-        container.appendChild(card);
+      appData.personalGoals.push({
+        id: 'pg' + Date.now(),
+        title,
+        tags,
+        deadlineText,
+        targetDate,
+        completed: false
       });
-    }
 
-    function deleteBandProject(idx) {
-      appData.bandProjects.splice(idx, 1);
       saveState();
-      renderBandProjects();
+      closeModal('personalGoalModal');
+      renderPersonalSection();
+      renderPracticePersonalSync();
     }
 
-    function switchPersonalSubTab(type) {
-      document.getElementById('toggleGoalBtn').classList.toggle('active', type === 'GOALS');
-      document.getElementById('toggleTodoBtn').classList.toggle('active', type === 'TODOS');
-      document.getElementById('personalGoalsSection').style.display = type === 'GOALS' ? 'block' : 'none';
-      document.getElementById('personalTodosSection').style.display = type === 'TODOS' ? 'block' : 'none';
+    function toggleGoalCompleted(idx) {
+      appData.personalGoals[idx].completed = !appData.personalGoals[idx].completed;
+      saveState();
+      renderPersonalSection();
+      renderPracticePersonalSync();
     }
 
-    /* FIX 1: Restored Personal Focus Goals Rendering */
+    /* SORTED PERSONAL SECTION & HASHTAG GROUPING */
     function renderPersonalSection() {
-      const goalsContainer = document.getElementById('personalGoalsList');
-      goalsContainer.innerHTML = '';
+      const container = document.getElementById('personalGoalsList');
+      container.innerHTML = '';
 
-      if (!appData.personalGoals || appData.personalGoals.length === 0) {
-        goalsContainer.innerHTML = '<div style="color:#888;">No personal focus goals.</div>';
+      if (!appData.personalGoals) appData.personalGoals = [];
+
+      // SORTING: Nearest deadline to furthest
+      appData.personalGoals.sort((a,b) => new Date(a.targetDate) - new Date(b.targetDate));
+
+      if (appData.personalGoals.length === 0) {
+        container.innerHTML = '<div style="color:#888;">No personal focus goals.</div>';
       } else {
         appData.personalGoals.forEach((g, idx) => {
-          let badgeClass = 'badge-green';
-          if (g.urgency === 'URGENT') badgeClass = 'badge-red';
-          if (g.urgency === 'MEDIUM') badgeClass = 'badge-orange';
-
           const card = document.createElement('div');
-          card.className = 'project-card';
+          card.className = `project-card ${g.completed ? 'completed' : ''}`;
           card.innerHTML = `
             <div class="project-header">
-              <div class="project-title">${g.title}</div>
-              <span class="deadline-badge ${badgeClass}">${g.urgency} | ${g.deadline}</span>
+              <div class="project-title">
+                <input type="checkbox" ${g.completed ? 'checked' : ''} onchange="toggleGoalCompleted(${idx})">
+                <span>${g.title}</span>
+              </div>
+              <span class="deadline-badge badge-orange">${g.deadlineText}</span>
             </div>
             <div class="hashtag-cloud">
               ${g.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
             </div>
-            <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${g.notes}</div>
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:8px;" onclick="deletePersonalGoal(${idx})">🗑️ Delete</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:6px;" onclick="appData.personalGoals.splice(${idx},1); saveState(); renderPersonalSection();">🗑️ Delete</button>
           `;
-          goalsContainer.appendChild(card);
+          container.appendChild(card);
         });
       }
+
+      // CATEGORIZED HASHTAG VIEW
+      renderHashtagGroupedView();
 
       const todosList = document.getElementById('quickTodosList');
       todosList.innerHTML = '';
@@ -1203,10 +1145,87 @@
       });
     }
 
-    function deletePersonalGoal(idx) {
-      appData.personalGoals.splice(idx, 1);
-      saveState();
-      renderPersonalSection();
+    function renderHashtagGroupedView() {
+      const container = document.getElementById('hashtagGroupedView');
+      container.innerHTML = '';
+
+      const tagsList = ['#Improv', '#Time/Tight', '#Vocab', '#Composition', '#Arrangements', '#ShortSections', '#Performance-related'];
+
+      tagsList.forEach(tag => {
+        const matchingGoals = appData.personalGoals.filter(g => g.tags.includes(tag) && !g.completed);
+        
+        const section = document.createElement('div');
+        section.style.marginBottom = '12px';
+        section.innerHTML = `<strong style="color:var(--c-skyblue);">${tag} (${matchingGoals.length}):</strong>`;
+
+        if (matchingGoals.length === 0) {
+          section.innerHTML += `<div style="font-size:0.8rem; color:#666; margin-left:12px;">None</div>`;
+        } else {
+          matchingGoals.forEach(g => {
+            section.innerHTML += `<div style="font-size:0.85rem; margin-left:12px; margin-top:2px;">• ${g.title} <span style="color:var(--c-orange); font-size:0.75rem;">(${g.deadlineText})</span></div>`;
+          });
+        }
+        container.appendChild(section);
+      });
+    }
+
+    /* PRACTICE SYNC REMINDERS */
+    function renderPracticePersonalSync() {
+      const container = document.getElementById('practicePersonalSyncList');
+      if (!container) return;
+
+      const activeGoals = appData.personalGoals.filter(g => !g.completed);
+      let html = '';
+
+      if (activeGoals.length > 0) {
+        html += `<div><strong>🎯 Focus Goals:</strong></div>`;
+        activeGoals.slice(0,3).forEach(g => {
+          html += `<div style="margin-left:8px;">• ${g.title} (${g.deadlineText})</div>`;
+        });
+      }
+
+      if (appData.quickTodos.length > 0) {
+        html += `<div style="margin-top:4px;"><strong>⚡ Quick Tasks:</strong></div>`;
+        appData.quickTodos.slice(0,3).forEach(td => {
+          html += `<div style="margin-left:8px;">• ${td}</div>`;
+        });
+      }
+
+      if (!html) html = '<div style="color:#888;">No active personal focus goals set.</div>';
+      container.innerHTML = html;
+    }
+
+    function renderBandProjects() {
+      const container = document.getElementById('bandProjectsList');
+      container.innerHTML = '';
+
+      if (!appData.bandProjects || appData.bandProjects.length === 0) {
+        container.innerHTML = '<div style="color:#888;">No active band projects.</div>';
+        return;
+      }
+
+      appData.bandProjects.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.innerHTML = `
+          <div class="project-header">
+            <div class="project-title">${p.title}</div>
+            <span class="deadline-badge badge-red">${p.urgency} | ${p.deadline}</span>
+          </div>
+          <div class="hashtag-cloud">
+            ${p.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+          </div>
+          <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${p.notes}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function switchPersonalSubTab(type) {
+      document.getElementById('toggleGoalBtn').classList.toggle('active', type === 'GOALS');
+      document.getElementById('toggleTodoBtn').classList.toggle('active', type === 'TODOS');
+      document.getElementById('personalGoalsSection').style.display = type === 'GOALS' ? 'block' : 'none';
+      document.getElementById('personalTodosSection').style.display = type === 'TODOS' ? 'block' : 'none';
     }
 
     function addQuickTodo() {
@@ -1216,9 +1235,9 @@
       document.getElementById('quickTodoInput').value = '';
       saveState();
       renderPersonalSection();
+      renderPracticePersonalSync();
     }
 
-    /* FIX 2: Live Search for Song Arrangements */
     function renderArrangements(filterQuery = '') {
       const list = document.getElementById('arrangementsList');
       list.innerHTML = '';
