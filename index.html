@@ -259,7 +259,7 @@
 
     .slots-chip-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
       gap: 8px;
       margin-top: 12px;
     }
@@ -279,6 +279,8 @@
       min-height: 44px;
     }
     .slot-chip.selected-green { background: #2ECC71 !important; color: #052B14 !important; border-color: #27AE60; }
+    .slot-chip.status-tbc { background: #F1C40F !important; color: #000 !important; }
+    .slot-chip.status-subj { background: var(--c-orange) !important; color: #FFF !important; }
 
     .status-picker-bar { display: flex; gap: 8px; margin-top: 12px; }
     .status-opt-btn {
@@ -290,12 +292,11 @@
 
     .overlap-matrix { margin-bottom: 16px; border-bottom: 1px solid #3D2B22; padding-bottom: 12px; }
     .overlap-hour-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.8rem; }
-    .overlap-hour-label { width: 60px; font-weight: bold; color: var(--c-skyblue); }
+    .overlap-hour-label { width: 90px; font-weight: bold; color: var(--c-skyblue); }
     .overlap-bars-container { flex-grow: 1; display: flex; gap: 4px; }
     .member-bar-segment { height: 18px; border-radius: 3px; flex: 1; opacity: 0.2; }
     .member-bar-segment.firm { opacity: 1.0; }
 
-    /* CARD WITH URGENCY GRADIENT (RIGHT TO LEFT TO 50% TRANSPARENT) */
     .project-card {
       background: #281B15;
       border-left: 5px solid var(--c-cobalt);
@@ -311,10 +312,6 @@
     .project-card.urgency-orange {
       background: linear-gradient(90deg, #281B15 50%, rgba(224, 74, 29, 0.45) 100%);
       border-left-color: var(--c-orange);
-    }
-    .project-card.urgency-yellow {
-      background: linear-gradient(90deg, #281B15 50%, rgba(241, 196, 15, 0.35) 100%);
-      border-left-color: #F1C40F;
     }
 
     .project-card.completed { opacity: 0.5; text-decoration: line-through; }
@@ -373,7 +370,6 @@
       font-size: 0.85rem;
     }
 
-    /* JAZZ REPRISE STYLED UNDERLINED HEADERS */
     .jazz-h3 {
       font-family: 'Comic Sans MS', 'Brush Script MT', 'Chalkboard SE', cursive, sans-serif;
       font-size: 1.15rem;
@@ -465,13 +461,13 @@
       </div>
 
       <div style="font-size:0.85rem; color:var(--c-skyblue); margin-bottom:6px;">
-        Tap hours to select/deselect availability:
+        Tap options below to mark availability:
       </div>
 
       <div class="slots-chip-grid" id="slotsChipGrid"></div>
 
       <div style="margin-top:12px;">
-        <div style="font-size:0.8rem; color:#AAA; margin-bottom:4px;">Mark Status for Selected Hour(s):</div>
+        <div style="font-size:0.8rem; color:#AAA; margin-bottom:4px;">Set Status for Selected Slot(s):</div>
         <div class="status-picker-bar">
           <button class="status-opt-btn" onclick="setSlotStatus('FIRM')">✅ Firm</button>
           <button class="status-opt-btn" onclick="setSlotStatus('TBC')">❓ TBC</button>
@@ -479,7 +475,6 @@
         </div>
       </div>
 
-      <!-- PRACTICE AGENDA FIRST, THEN SYNCED REMINDERS BELOW IT -->
       <div style="margin-top:16px; border-top:1px solid #3D2B22; padding-top:12px;">
         <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">
           📝 Practice Agenda for this Session:
@@ -493,7 +488,7 @@
       </div>
     </div>
 
-    <!-- BAND MEMBERS DEMARCATED AND MOVED TO VERY BOTTOM -->
+    <!-- BAND MEMBERS AT VERY BOTTOM -->
     <div class="bottom-section-divider">
       <div class="card">
         <div class="card-title">
@@ -534,7 +529,7 @@
       </div>
 
       <div class="card">
-        <div class="card-title">🏷️ Goals Grouped By Hashtag</div>
+        <div class="card-title">🏷️️ Goals Grouped By Hashtag</div>
         <div id="hashtagGroupedView"></div>
       </div>
     </div>
@@ -996,6 +991,7 @@
       }
     }
 
+    /* WEEKDAYS LIMITED TO SINGLE NIGHT TIME + SEPARATE EARLY LEAVE BUTTON */
     function renderDayDetails(dateStr) {
       document.getElementById('selectedDateLabel').textContent = `📅 ${dateStr}`;
       const holidayTag = document.getElementById('holidayTagLabel');
@@ -1013,43 +1009,86 @@
       const grid = document.getElementById('slotsChipGrid');
       grid.innerHTML = '';
 
-      let hours = (isWeekend || isHkHoliday) ? [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23] : [19,20,21,22,23];
       const userAvail = (appData.availability[dateStr] && appData.availability[dateStr][appData.currentUser]) || {};
 
-      hours.forEach(h => {
-        const chip = document.createElement('div');
-        chip.className = 'slot-chip';
-        const status = userAvail[h];
+      if (isWeekend || isHkHoliday) {
+        const weekendHours = [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+        weekendHours.forEach(h => {
+          const chip = document.createElement('div');
+          chip.className = 'slot-chip';
+          const status = userAvail[h];
+          if (status === 'FIRM') chip.classList.add('selected-green');
+          if (status === 'TBC') chip.classList.add('status-tbc');
+          if (status === 'SUBJ') chip.classList.add('status-subj');
 
-        if (status) chip.classList.add('selected-green');
-        chip.innerHTML = `${String(h).padStart(2,'0')}:00 ${status ? '✓' : '+'}`;
-        chip.onclick = () => toggleHourSlot(dateStr, h);
-        grid.appendChild(chip);
-      });
+          chip.innerHTML = `${String(h).padStart(2,'0')}:00 ${status ? '(' + status + ')' : '+'}`;
+          chip.onclick = () => toggleSlotKey(dateStr, String(h));
+          grid.appendChild(chip);
+        });
+      } else {
+        // WEEKDAY: SINGLE "NIGHT TIME" TAB + "EARLY LEAVE" BUTTON
+        const nightChip = document.createElement('div');
+        nightChip.className = 'slot-chip';
+        const nightStatus = userAvail['NIGHT'];
+        if (nightStatus === 'FIRM') nightChip.classList.add('selected-green');
+        if (nightStatus === 'TBC') nightChip.classList.add('status-tbc');
+        if (nightStatus === 'SUBJ') nightChip.classList.add('status-subj');
+        nightChip.innerHTML = `🌙 Night Time ${nightStatus ? '(' + nightStatus + ')' : '+'}`;
+        nightChip.onclick = () => toggleSlotKey(dateStr, 'NIGHT');
+        grid.appendChild(nightChip);
+
+        const earlyChip = document.createElement('div');
+        earlyChip.className = 'slot-chip';
+        const earlyStatus = userAvail['EARLY_LEAVE'];
+        if (earlyStatus === 'FIRM') earlyChip.classList.add('selected-green');
+        if (earlyStatus === 'TBC') earlyChip.classList.add('status-tbc');
+        if (earlyStatus === 'SUBJ') earlyChip.classList.add('status-subj');
+        earlyChip.innerHTML = `🏃 Early Leave ${earlyStatus ? '(' + earlyStatus + ')' : '+'}`;
+        earlyChip.onclick = () => toggleSlotKey(dateStr, 'EARLY_LEAVE');
+        grid.appendChild(earlyChip);
+      }
 
       document.getElementById('sessionAgendaInput').value = appData.agendas[dateStr] || '';
-      renderOverlapBars(dateStr, hours);
+      renderOverlapBars(dateStr, isWeekend || isHkHoliday);
       renderPracticePersonalSync();
     }
 
-    function toggleHourSlot(dateStr, hour) {
+    function toggleSlotKey(dateStr, slotKey) {
       if (!appData.availability[dateStr]) appData.availability[dateStr] = {};
       if (!appData.availability[dateStr][appData.currentUser]) appData.availability[dateStr][appData.currentUser] = {};
 
-      const currentStatus = appData.availability[dateStr][appData.currentUser][hour];
+      const currentStatus = appData.availability[dateStr][appData.currentUser][slotKey];
       if (currentStatus) {
-        delete appData.availability[dateStr][appData.currentUser][hour];
+        delete appData.availability[dateStr][appData.currentUser][slotKey];
       } else {
-        appData.availability[dateStr][appData.currentUser][hour] = 'FIRM';
+        appData.availability[dateStr][appData.currentUser][slotKey] = 'FIRM';
       }
 
       saveState();
       renderDayDetails(dateStr);
     }
 
+    /* WORKING "FIRM", "TBC", "SUBJ TO CHANGE" BUTTONS */
     function setSlotStatus(status) {
-      const userAvail = (appData.availability[selectedCalDate] && appData.availability[selectedCalDate][appData.currentUser]) || {};
-      Object.keys(userAvail).forEach(h => { userAvail[h] = status; });
+      if (!appData.availability[selectedCalDate]) appData.availability[selectedCalDate] = {};
+      if (!appData.availability[selectedCalDate][appData.currentUser]) appData.availability[selectedCalDate][appData.currentUser] = {};
+
+      const userAvail = appData.availability[selectedCalDate][appData.currentUser];
+      const keys = Object.keys(userAvail);
+
+      if (keys.length === 0) {
+        // If nothing is selected yet, default to night time or first slot
+        const dObj = new Date(selectedCalDate);
+        const isWeekend = (dObj.getDay() === 0 || dObj.getDay() === 6);
+        if (isWeekend) {
+          userAvail['19'] = status;
+        } else {
+          userAvail['NIGHT'] = status;
+        }
+      } else {
+        keys.forEach(k => { userAvail[k] = status; });
+      }
+
       saveState();
       renderDayDetails(selectedCalDate);
     }
@@ -1059,15 +1098,22 @@
       saveState();
     }
 
-    function renderOverlapBars(dateStr, hours) {
+    function renderOverlapBars(dateStr, isWeekend) {
       const container = document.getElementById('overlapBars');
       container.innerHTML = '';
       const dayData = appData.availability[dateStr] || {};
 
-      hours.forEach(h => {
+      const slotsToDisplay = isWeekend 
+        ? [8,10,12,14,16,18,20,22] 
+        : [{ key: 'NIGHT', label: '🌙 Night' }, { key: 'EARLY_LEAVE', label: '🏃 Early Leave' }];
+
+      slotsToDisplay.forEach(item => {
+        const slotKey = typeof item === 'object' ? item.key : String(item);
+        const slotLabel = typeof item === 'object' ? item.label : `${String(item).padStart(2,'0')}:00`;
+
         const row = document.createElement('div');
         row.className = 'overlap-hour-row';
-        row.innerHTML = `<div class="overlap-hour-label">${String(h).padStart(2,'0')}:00</div>`;
+        row.innerHTML = `<div class="overlap-hour-label">${slotLabel}</div>`;
 
         const bars = document.createElement('div');
         bars.className = 'overlap-bars-container';
@@ -1077,8 +1123,8 @@
           seg.className = 'member-bar-segment';
           seg.style.backgroundColor = m.color;
 
-          const mStatus = dayData[m.id] ? dayData[m.id][h] : null;
-          if (mStatus === 'FIRM') seg.classList.add('firm');
+          const mStatus = dayData[m.id] ? dayData[m.id][slotKey] : null;
+          if (mStatus) seg.classList.add('firm');
 
           bars.appendChild(seg);
         });
@@ -1111,7 +1157,7 @@
         const div = document.createElement('div');
         div.style.padding = '6px 0';
         div.style.borderBottom = '1px solid #3D2B22';
-        div.innerHTML = `<strong>#${idx+1} ${item.dateStr}</strong> - ${item.score} member-hour slots`;
+        div.innerHTML = `<strong>#${idx+1} ${item.dateStr}</strong> - ${item.score} member response(s)`;
         list.appendChild(div);
       });
     }
@@ -1364,11 +1410,14 @@
       renderPracticePersonalSync();
     }
 
-    function toggleGoalCompleted(idx) {
-      appData.personalGoals[idx].completed = !appData.personalGoals[idx].completed;
-      saveState();
-      renderPersonalSection();
-      renderPracticePersonalSync();
+    function toggleGoalCompletedById(id) {
+      const g = appData.personalGoals.find(x => x.id === id);
+      if (g) {
+        g.completed = !g.completed;
+        saveState();
+        renderPersonalSection();
+        renderPracticePersonalSync();
+      }
     }
 
     function renderPersonalSection() {
@@ -1422,16 +1471,6 @@
       });
     }
 
-    function toggleGoalCompletedById(id) {
-      const g = appData.personalGoals.find(x => x.id === id);
-      if (g) {
-        g.completed = !g.completed;
-        saveState();
-        renderPersonalSection();
-        renderPracticePersonalSync();
-      }
-    }
-
     function deletePersonalGoal(id) {
       const idx = appData.personalGoals.findIndex(g => g.id === id);
       if (idx !== -1) {
@@ -1466,7 +1505,7 @@
       });
     }
 
-    /* PRACTICE SYNC REMINDERS (JAZZ REPRISE STYLED UNDERLINED HEADERS + DATE FIRST) */
+    /* PRACTICE SYNC REMINDERS */
     function renderPracticePersonalSync() {
       const container = document.getElementById('practicePersonalSyncList');
       if (!container) return;
