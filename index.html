@@ -295,13 +295,28 @@
     .member-bar-segment { height: 18px; border-radius: 3px; flex: 1; opacity: 0.2; }
     .member-bar-segment.firm { opacity: 1.0; }
 
+    /* CARD WITH URGENCY GRADIENT (RIGHT TO LEFT TO 50% TRANSPARENT) */
     .project-card {
       background: #281B15;
       border-left: 5px solid var(--c-cobalt);
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 12px;
+      position: relative;
     }
+    .project-card.urgency-red {
+      background: linear-gradient(90deg, #281B15 50%, rgba(192, 57, 43, 0.45) 100%);
+      border-left-color: var(--c-red);
+    }
+    .project-card.urgency-orange {
+      background: linear-gradient(90deg, #281B15 50%, rgba(224, 74, 29, 0.45) 100%);
+      border-left-color: var(--c-orange);
+    }
+    .project-card.urgency-yellow {
+      background: linear-gradient(90deg, #281B15 50%, rgba(241, 196, 15, 0.35) 100%);
+      border-left-color: #F1C40F;
+    }
+
     .project-card.completed { opacity: 0.5; text-decoration: line-through; }
     .project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .project-title { font-size: 1.05rem; font-weight: bold; color: var(--c-ivory); display: flex; align-items: center; gap: 8px; }
@@ -353,18 +368,42 @@
       background: #1A120D;
       border: 1px dashed var(--c-orange);
       border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-top: 16px;
       font-size: 0.85rem;
+    }
+
+    /* JAZZ REPRISE STYLED UNDERLINED HEADERS */
+    .jazz-h3 {
+      font-family: 'Comic Sans MS', 'Brush Script MT', 'Chalkboard SE', cursive, sans-serif;
+      font-size: 1.15rem;
+      color: var(--c-orange);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .reminder-item-indented {
+      padding-left: 20px;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .bottom-section-divider {
+      border-top: 2px dashed #3D2B22;
+      margin-top: 24px;
+      padding-top: 16px;
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
+  <!-- TOP HEADER (TACO LOGO) -->
   <header>
     <div class="top-bar">
-      <div class="band-title">🎷 LAZY TACOS</div>
+      <div class="band-title">🌮 LAZY TACOS</div>
       <div class="header-actions">
         <a href="https://drive.google.com/drive/u/3/my-drive" target="_blank" class="btn-icon-link">
           📁 Drive
@@ -412,14 +451,6 @@
       <div id="bestSlotsList" style="font-size:0.85rem;">Searching calendar...</div>
     </div>
 
-    <div class="card">
-      <div class="card-title">
-        <span>Band Members</span>
-        <button class="btn btn-outline" style="font-size:0.75rem; padding:4px 8px;" onclick="openMemberModal()">+ Edit Roster</button>
-      </div>
-      <div class="member-pills" id="memberPills"></div>
-    </div>
-
     <div class="card" id="dayDetailCard">
       <div class="card-title">
         <span id="selectedDateLabel">Select a date above</span>
@@ -448,16 +479,28 @@
         </div>
       </div>
 
+      <!-- PRACTICE AGENDA FIRST, THEN SYNCED REMINDERS BELOW IT -->
       <div style="margin-top:16px; border-top:1px solid #3D2B22; padding-top:12px;">
-        <div class="sync-personal-reminders">
-          <div style="font-weight:bold; color:var(--c-orange); margin-bottom:4px;">💡 Synced Personal Focus & To-Dos Reminders:</div>
-          <div id="practicePersonalSyncList">Loading personal goals...</div>
-        </div>
-
         <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">
           📝 Practice Agenda for this Session:
         </label>
         <textarea id="sessionAgendaInput" class="form-control" placeholder="e.g. Song sections, arrangements, or Google Drive audio link..." onchange="saveSessionAgenda()"></textarea>
+
+        <div class="sync-personal-reminders">
+          <div style="font-weight:bold; color:var(--c-ivory); margin-bottom:4px;">💡 Synced Personal Focus & To-Dos Reminders</div>
+          <div id="practicePersonalSyncList">Loading personal goals...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAND MEMBERS DEMARCATED AND MOVED TO VERY BOTTOM -->
+    <div class="bottom-section-divider">
+      <div class="card">
+        <div class="card-title">
+          <span>Band Members</span>
+          <button class="btn btn-outline" style="font-size:0.75rem; padding:4px 8px;" onclick="openMemberModal()">+ Edit Roster</button>
+        </div>
+        <div class="member-pills" id="memberPills"></div>
       </div>
     </div>
 
@@ -616,7 +659,8 @@
   <!-- MODALS -->
   <div class="modal-overlay" id="bandProjectModal">
     <div class="modal-content">
-      <div class="card-title">Add Band Project Focus</div>
+      <div class="card-title" id="bpModalTitle">Add / Edit Band Project</div>
+      <input type="hidden" id="editingBpId" value="">
       
       <div class="form-group">
         <label>Project Title:</label>
@@ -653,7 +697,7 @@
       </div>
 
       <div class="form-group">
-        <label>Notes / Details:</label>
+        <label>Notes / Remarks:</label>
         <textarea id="bpNotesInput" class="form-control" placeholder="Project details or instructions..."></textarea>
       </div>
 
@@ -666,7 +710,8 @@
 
   <div class="modal-overlay" id="personalGoalModal">
     <div class="modal-content">
-      <div class="card-title">Add Personal Focus Item</div>
+      <div class="card-title" id="pgModalTitle">Add / Edit Personal Focus</div>
+      <input type="hidden" id="editingPgId" value="">
       
       <div class="form-group">
         <label>Goal Description:</label>
@@ -700,6 +745,11 @@
       <div class="form-group" id="customDateGroup" style="display:none;">
         <label>Select Target Date:</label>
         <input type="date" id="goalCustomDate" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Notes / Remarks:</label>
+        <textarea id="goalNotesInput" class="form-control" placeholder="Add practice remarks or instructions..."></textarea>
       </div>
 
       <div style="display:flex; gap:8px; margin-top:16px;">
@@ -937,7 +987,6 @@
       renderCalendar();
     }
 
-    /* INSTANT JUMP ON DAY SELECTION (ALL SCROLL ANIMATIONS CUT) */
     function selectCalendarDate(dateStr) {
       selectedCalDate = dateStr;
       renderCalendar();
@@ -1117,8 +1166,28 @@
       openMemberModal();
     }
 
-    /* BAND PROJECT MODAL & FUNCTIONS WITH UPDATED HASHTAGS */
-    function openBandProjectModal() {
+    /* BAND PROJECTS EDITING & MODALS */
+    function openBandProjectModal(bpIdToEdit = null) {
+      document.getElementById('editingBpId').value = bpIdToEdit || '';
+      const chips = document.querySelectorAll('#bpModalHashtags .hashtag-chip');
+      chips.forEach(c => c.classList.remove('selected'));
+
+      if (bpIdToEdit) {
+        const p = appData.bandProjects.find(x => x.id === bpIdToEdit);
+        if (p) {
+          document.getElementById('bpModalTitle').textContent = 'Edit Band Project';
+          document.getElementById('bpTitleInput').value = p.title || '';
+          document.getElementById('bpNotesInput').value = p.notes || '';
+          (p.tags || []).forEach(t => {
+            chips.forEach(c => { if (c.textContent === t) c.classList.add('selected'); });
+          });
+        }
+      } else {
+        document.getElementById('bpModalTitle').textContent = 'Add Band Project Focus';
+        document.getElementById('bpTitleInput').value = '';
+        document.getElementById('bpNotesInput').value = '';
+      }
+
       document.getElementById('bandProjectModal').classList.add('active');
     }
 
@@ -1147,14 +1216,27 @@
         if (timelineSelect === '下次show前') targetDate = formatDate(new Date(Date.now() + 86400000 * 7));
       }
 
-      appData.bandProjects.push({
-        id: 'bp' + Date.now(),
-        title,
-        tags,
-        deadlineText,
-        targetDate,
-        notes: document.getElementById('bpNotesInput').value
-      });
+      const editingId = document.getElementById('editingBpId').value;
+
+      if (editingId) {
+        const p = appData.bandProjects.find(x => x.id === editingId);
+        if (p) {
+          p.title = title;
+          p.tags = tags;
+          p.deadlineText = deadlineText;
+          p.targetDate = targetDate;
+          p.notes = document.getElementById('bpNotesInput').value;
+        }
+      } else {
+        appData.bandProjects.push({
+          id: 'bp' + Date.now(),
+          title,
+          tags,
+          deadlineText,
+          targetDate,
+          notes: document.getElementById('bpNotesInput').value
+        });
+      }
 
       saveState();
       closeModal('bandProjectModal');
@@ -1170,26 +1252,61 @@
         return;
       }
 
-      appData.bandProjects.forEach((p, idx) => {
+      appData.bandProjects.forEach((p) => {
+        let urgencyClass = 'urgency-orange';
+        if (p.deadlineText === '今すぐ') urgencyClass = 'urgency-red';
+
         const card = document.createElement('div');
-        card.className = 'project-card';
+        card.className = `project-card ${urgencyClass}`;
         card.innerHTML = `
           <div class="project-header">
             <div class="project-title">${p.title}</div>
             <span class="deadline-badge badge-red">${p.deadlineText}</span>
           </div>
           <div class="hashtag-cloud">
-            ${p.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+            ${(p.tags || []).map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
           </div>
-          <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">${p.notes || ''}</div>
-          <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:8px;" onclick="appData.bandProjects.splice(${idx},1); saveState(); renderBandProjects();">🗑️️ Delete</button>
+          ${p.notes ? `<div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">📝 ${p.notes}</div>` : ''}
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openBandProjectModal('${p.id}')">✏️ Edit</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deleteBandProject('${p.id}')">🗑️ Delete</button>
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    /* PERSONAL FOCUS MODAL & LOGIC */
-    function openPersonalGoalModal() {
+    function deleteBandProject(id) {
+      const idx = appData.bandProjects.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        appData.bandProjects.splice(idx, 1);
+        saveState();
+        renderBandProjects();
+      }
+    }
+
+    /* PERSONAL FOCUS EDITING & MODALS */
+    function openPersonalGoalModal(pgIdToEdit = null) {
+      document.getElementById('editingPgId').value = pgIdToEdit || '';
+      const chips = document.querySelectorAll('#modalHashtags .hashtag-chip');
+      chips.forEach(c => c.classList.remove('selected'));
+
+      if (pgIdToEdit) {
+        const g = appData.personalGoals.find(x => x.id === pgIdToEdit);
+        if (g) {
+          document.getElementById('pgModalTitle').textContent = 'Edit Personal Focus Goal';
+          document.getElementById('goalTitleInput').value = g.title || '';
+          document.getElementById('goalNotesInput').value = g.notes || '';
+          (g.tags || []).forEach(t => {
+            chips.forEach(c => { if (c.textContent === t) c.classList.add('selected'); });
+          });
+        }
+      } else {
+        document.getElementById('pgModalTitle').textContent = 'Add Personal Focus Goal';
+        document.getElementById('goalTitleInput').value = '';
+        document.getElementById('goalNotesInput').value = '';
+      }
+
       document.getElementById('personalGoalModal').classList.add('active');
     }
 
@@ -1218,14 +1335,28 @@
         if (timelineSelect === '下次show前') targetDate = formatDate(new Date(Date.now() + 86400000 * 7));
       }
 
-      appData.personalGoals.push({
-        id: 'pg' + Date.now(),
-        title,
-        tags,
-        deadlineText,
-        targetDate,
-        completed: false
-      });
+      const editingId = document.getElementById('editingPgId').value;
+
+      if (editingId) {
+        const g = appData.personalGoals.find(x => x.id === editingId);
+        if (g) {
+          g.title = title;
+          g.tags = tags;
+          g.deadlineText = deadlineText;
+          g.targetDate = targetDate;
+          g.notes = document.getElementById('goalNotesInput').value;
+        }
+      } else {
+        appData.personalGoals.push({
+          id: 'pg' + Date.now(),
+          title,
+          tags,
+          deadlineText,
+          targetDate,
+          notes: document.getElementById('goalNotesInput').value,
+          completed: false
+        });
+      }
 
       saveState();
       closeModal('personalGoalModal');
@@ -1251,21 +1382,28 @@
       if (appData.personalGoals.length === 0) {
         container.innerHTML = '<div style="color:#888;">No personal focus goals.</div>';
       } else {
-        appData.personalGoals.forEach((g, idx) => {
+        appData.personalGoals.forEach((g) => {
+          let urgencyClass = 'urgency-orange';
+          if (g.deadlineText === '今すぐ') urgencyClass = 'urgency-red';
+
           const card = document.createElement('div');
-          card.className = `project-card ${g.completed ? 'completed' : ''}`;
+          card.className = `project-card ${urgencyClass} ${g.completed ? 'completed' : ''}`;
           card.innerHTML = `
             <div class="project-header">
               <div class="project-title">
-                <input type="checkbox" ${g.completed ? 'checked' : ''} onchange="toggleGoalCompleted(${idx})">
+                <input type="checkbox" ${g.completed ? 'checked' : ''} onchange="toggleGoalCompletedById('${g.id}')">
                 <span>${g.title}</span>
               </div>
               <span class="deadline-badge badge-orange">${g.deadlineText}</span>
             </div>
             <div class="hashtag-cloud">
-              ${g.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+              ${(g.tags || []).map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
             </div>
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px; margin-top:6px;" onclick="appData.personalGoals.splice(${idx},1); saveState(); renderPersonalSection();">🗑️ Delete</button>
+            ${g.notes ? `<div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:4px;">📝 ${g.notes}</div>` : ''}
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openPersonalGoalModal('${g.id}')">✏️ Edit</button>
+              <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deletePersonalGoal('${g.id}')">🗑️ Delete</button>
+            </div>
           `;
           container.appendChild(card);
         });
@@ -1284,6 +1422,26 @@
       });
     }
 
+    function toggleGoalCompletedById(id) {
+      const g = appData.personalGoals.find(x => x.id === id);
+      if (g) {
+        g.completed = !g.completed;
+        saveState();
+        renderPersonalSection();
+        renderPracticePersonalSync();
+      }
+    }
+
+    function deletePersonalGoal(id) {
+      const idx = appData.personalGoals.findIndex(g => g.id === id);
+      if (idx !== -1) {
+        appData.personalGoals.splice(idx, 1);
+        saveState();
+        renderPersonalSection();
+        renderPracticePersonalSync();
+      }
+    }
+
     function renderHashtagGroupedView() {
       const container = document.getElementById('hashtagGroupedView');
       container.innerHTML = '';
@@ -1291,7 +1449,7 @@
       const tagsList = ['#Improv', '#Time/Tight', '#Vocab', '#Composition', '#Arrangements', '#ShortSections', '#Performance-related'];
 
       tagsList.forEach(tag => {
-        const matchingGoals = appData.personalGoals.filter(g => g.tags.includes(tag) && !g.completed);
+        const matchingGoals = appData.personalGoals.filter(g => (g.tags || []).includes(tag) && !g.completed);
         
         const section = document.createElement('div');
         section.style.marginBottom = '12px';
@@ -1308,7 +1466,7 @@
       });
     }
 
-    /* PRACTICE SYNC REMINDERS */
+    /* PRACTICE SYNC REMINDERS (JAZZ REPRISE STYLED UNDERLINED HEADERS + DATE FIRST) */
     function renderPracticePersonalSync() {
       const container = document.getElementById('practicePersonalSyncList');
       if (!container) return;
@@ -1317,20 +1475,20 @@
       let html = '';
 
       if (activeGoals.length > 0) {
-        html += `<div><strong>🎯 Focus Goals:</strong></div>`;
+        html += `<h3 class="jazz-h3">🎯 Focus Goals</h3>`;
         activeGoals.slice(0,3).forEach(g => {
-          html += `<div style="margin-left:8px;">• ${g.title} (${g.deadlineText})</div>`;
+          html += `<div class="reminder-item-indented">• <strong>[${g.deadlineText}]</strong> - ${g.title}</div>`;
         });
       }
 
       if (appData.quickTodos.length > 0) {
-        html += `<div style="margin-top:4px;"><strong>⚡ Quick Tasks:</strong></div>`;
+        html += `<h3 class="jazz-h3">⚡ Quick Tasks</h3>`;
         appData.quickTodos.slice(0,3).forEach(td => {
-          html += `<div style="margin-left:8px;">• ${td}</div>`;
+          html += `<div class="reminder-item-indented">• ${td}</div>`;
         });
       }
 
-      if (!html) html = '<div style="color:#888;">No active personal focus goals set.</div>';
+      if (!html) html = '<div style="color:#888; font-style:italic;">No active personal focus goals set.</div>';
       container.innerHTML = html;
     }
 
@@ -1598,7 +1756,7 @@
           </div>
           ${s.remarks ? `<div style="font-size:0.8rem; margin-top:4px; font-style:italic; color:#CCC;">📝 Remarks: ${s.remarks}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="openShowModal('${s.id}')">✏️️ Edit</button>
+            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="openShowModal('${s.id}')">✏️ Edit</button>
             <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="deleteShow('${s.id}')">🗑️ Delete</button>
           </div>
         `;
@@ -1625,7 +1783,7 @@
         .sort((a,b) => a.dObj - b.dObj);
 
       if (upcoming.length === 0) {
-        banner.innerHTML = `🎷 Lazy Tacos - No upcoming shows booked`;
+        banner.innerHTML = `🌮 Lazy Tacos - No upcoming shows booked`;
       } else {
         const next = upcoming[0];
         const diffDays = Math.ceil((next.dObj - now) / (1000 * 60 * 60 * 24));
