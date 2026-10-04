@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lazy Tacos - Band Management OS</title>
   
   <!-- Firebase SDKs for Live Sync -->
@@ -25,7 +25,6 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html { scroll-behavior: auto !important; }
     body {
       background-color: var(--c-bg);
       color: var(--c-ivory);
@@ -173,94 +172,93 @@
 
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .month-title { font-size: 1.2rem; font-weight: bold; color: var(--c-ivory); }
-    
-    .calendar-container {
+
+    /* =========================================================
+       CALENDAR TABLE STYLES (REWRITTEN FOR GUARANTEED SAFARI COMPATIBILITY)
+       ========================================================= */
+    .cal-table-wrapper {
       width: 100%;
-      display: flex;
-      flex-direction: column;
+      overflow-x: auto;
     }
-    .day-names-row {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+    .cal-table {
       width: 100%;
-      margin-bottom: 6px;
+      border-collapse: separate;
+      border-spacing: 4px;
+      table-layout: fixed;
     }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      width: 100%;
-    }
-    .day-name {
+    .cal-table th {
       font-size: 0.75rem;
       font-weight: bold;
       color: var(--c-skyblue);
       text-align: center;
       padding: 4px 0;
+      width: 14.28%;
     }
-    
-    /* FIX FOR MOBILE SAFARI CALENDAR COLLAPSE */
-    .cal-cell {
-      height: 60px !important;
-      min-height: 60px !important;
+    .cal-table td {
+      width: 14.28%;
+      height: 60px;
+      max-height: 60px;
       background: #1A100B;
-      border-radius: 6px;
-      padding: 4px 2px;
       border: 1px solid #38251B;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
+      border-radius: 6px;
+      vertical-align: top;
+      padding: 4px 2px;
       cursor: pointer;
-      position: relative;
-      width: 100%;
       box-sizing: border-box;
-      flex-shrink: 0;
-    }
-    .cal-cell.other-month { opacity: 0.15; pointer-events: none; }
-    .cal-cell.selected { border: 2px solid var(--c-orange) !important; background: rgba(224,74,29,0.3) !important; }
-    .cal-cell .date-num { 
-      font-size: 0.95rem; 
-      font-weight: bold; 
-      line-height: 1.1; 
-      color: var(--c-ivory);
-      margin-top: 2px;
-    }
-    
-    .cal-cell.has-overlap { box-shadow: inset 0 0 6px rgba(224, 74, 29, 0.7); border-color: var(--c-orange); }
-    .cal-cell.full-band { box-shadow: 0 0 8px rgba(127, 135, 82, 0.8); border: 2px solid var(--c-olive); background: rgba(127, 135, 82, 0.25); }
-    
-    .cal-cell.hk-holiday { background: #40061A !important; border: 1.5px solid var(--c-hk-pink) !important; }
-    .cal-cell.hk-holiday .date-num { color: var(--c-hk-pink); font-weight: 900; }
-    .hk-tag {
-      font-size: 0.55rem;
-      background: var(--c-hk-pink);
-      color: #FFF;
-      padding: 1px 2px;
-      border-radius: 3px;
-      font-weight: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
       text-align: center;
-      margin-bottom: 2px;
+    }
+    .cal-table td.other-month {
+      opacity: 0.15;
+      pointer-events: none;
+      background: transparent;
+      border: 1px dashed #2A1A12;
+    }
+    .cal-table td.selected {
+      border: 2px solid var(--c-orange) !important;
+      background: rgba(224, 74, 29, 0.25) !important;
+    }
+    .cal-table td.has-overlap {
+      box-shadow: inset 0 0 6px rgba(224, 74, 29, 0.7);
+      border-color: var(--c-orange);
+    }
+    .cal-table td.full-band {
+      box-shadow: 0 0 8px rgba(127, 135, 82, 0.8);
+      border: 2px solid var(--c-olive) !important;
+      background: rgba(127, 135, 82, 0.2) !important;
+    }
+    .cal-table td.hk-holiday {
+      background: #40061A !important;
+      border: 1.5px solid var(--c-hk-pink) !important;
     }
 
-    .gold-show-plate {
-      background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-      color: #111;
+    .date-num-display {
+      font-size: 0.95rem;
+      font-weight: bold;
+      line-height: 1;
+      color: var(--c-ivory);
+      margin-bottom: 2px;
+    }
+    .cal-table td.hk-holiday .date-num-display {
+      color: var(--c-hk-pink);
+    }
+
+    .cell-badge {
       font-size: 0.55rem;
       font-weight: bold;
-      padding: 1px 2px;
       border-radius: 3px;
-      width: 100%;
-      text-align: center;
+      padding: 1px 2px;
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-bottom: 2px;
+      display: block;
+      width: 100%;
+    }
+    .badge-holiday { background: var(--c-hk-pink); color: #FFF; }
+    .badge-fullband { background: var(--c-olive); color: #FFF; }
+    .badge-gig {
+      background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+      color: #111;
     }
 
     .member-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -331,11 +329,10 @@
       background: linear-gradient(90deg, #281B15 50%, rgba(224, 74, 29, 0.45) 100%);
       border-left-color: var(--c-orange);
     }
-
     .project-card.completed { opacity: 0.5; text-decoration: line-through; }
     .project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .project-title { font-size: 1.05rem; font-weight: bold; color: var(--c-ivory); display: flex; align-items: center; gap: 8px; }
-    
+
     .deadline-badge {
       font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 12px; white-space: nowrap;
     }
@@ -414,24 +411,17 @@
 </head>
 <body>
 
-  <!-- TOP HEADER (TACO LOGO) -->
+  <!-- TOP HEADER -->
   <header>
     <div class="top-bar">
       <div class="band-title">🌮 LAZY TACOS</div>
       <div class="header-actions">
-        <a href="https://drive.google.com/drive/u/3/my-drive" target="_blank" class="btn-icon-link">
-          📁 Drive
-        </a>
-        <div class="sync-badge">
-          ☁️ <span id="syncStatus">Live Cloud Sync</span>
-        </div>
+        <a href="https://drive.google.com/drive/u/3/my-drive" target="_blank" class="btn-icon-link">📁 Drive</a>
+        <div class="sync-badge">☁️ <span id="syncStatus">Live Cloud Sync</span></div>
         <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="exportData()">💾 Backup</button>
       </div>
     </div>
-
-    <div class="countdown-banner" id="countdownBanner">
-      ⌛ Calculating next show...
-    </div>
+    <div class="countdown-banner" id="countdownBanner">⌛ Calculating next show...</div>
   </header>
 
   <div class="user-selector-bar">
@@ -439,9 +429,8 @@
     <select id="userSelect" class="user-select-dropdown" onchange="changeCurrentUser()"></select>
   </div>
 
-  <!-- PAGE 1: PRACTICE SCHEDULER -->
+  <!-- PAGE 1: PRACTICE SCHEDULER & CALENDAR -->
   <div id="page-practice" class="page active">
-
     <div class="card">
       <div class="calendar-header">
         <button class="btn btn-outline" onclick="changeMonth(-1)">◀ Prev</button>
@@ -449,14 +438,16 @@
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
       </div>
 
-      <div class="calendar-container">
-        <div class="day-names-row">
-          <div class="day-name">Mon</div><div class="day-name">Tue</div>
-          <div class="day-name">Wed</div><div class="day-name">Thu</div>
-          <div class="day-name">Fri</div><div class="day-name">Sat</div>
-          <div class="day-name">Sun</div>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
+      <!-- HTML TABLE BASED CALENDAR TO FIX SAFARI GRID COLLAPSE -->
+      <div class="cal-table-wrapper">
+        <table class="cal-table">
+          <thead>
+            <tr>
+              <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+            </tr>
+          </thead>
+          <tbody id="calendarTableBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -472,16 +463,11 @@
       </div>
 
       <div class="overlap-matrix">
-        <div style="font-size:0.9rem; font-weight:bold; color:var(--c-ivory); margin-bottom:8px;">
-          👥 Band Overlap Availability
-        </div>
+        <div style="font-size:0.9rem; font-weight:bold; color:var(--c-ivory); margin-bottom:8px;">👥 Band Overlap Availability</div>
         <div id="overlapBars"></div>
       </div>
 
-      <div style="font-size:0.85rem; color:var(--c-skyblue); margin-bottom:6px;">
-        Tap options below to mark availability:
-      </div>
-
+      <div style="font-size:0.85rem; color:var(--c-skyblue); margin-bottom:6px;">Tap options below to mark availability:</div>
       <div class="slots-chip-grid" id="slotsChipGrid"></div>
 
       <div style="margin-top:12px;">
@@ -494,9 +480,7 @@
       </div>
 
       <div style="margin-top:16px; border-top:1px solid #3D2B22; padding-top:12px;">
-        <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">
-          📝 Practice Agenda for this Session:
-        </label>
+        <label style="font-size:0.85rem; font-weight:bold; color:var(--c-skyblue);">📝 Practice Agenda for this Session:</label>
         <textarea id="sessionAgendaInput" class="form-control" placeholder="e.g. Song sections, arrangements, or Google Drive audio link..." onchange="saveSessionAgenda()"></textarea>
 
         <div class="sync-personal-reminders">
@@ -506,7 +490,6 @@
       </div>
     </div>
 
-    <!-- BAND MEMBERS AT VERY BOTTOM -->
     <div class="bottom-section-divider">
       <div class="card">
         <div class="card-title">
@@ -516,7 +499,6 @@
         <div class="member-pills" id="memberPills"></div>
       </div>
     </div>
-
   </div>
 
   <!-- PAGE 2a: BAND PROJECTS -->
@@ -554,7 +536,7 @@
 
     <div id="personalTodosSection" style="display:none;">
       <div class="card">
-        <div class="card-title">Quick Tasks (e.g. Upload scores, reply)</div>
+        <div class="card-title">Quick Tasks</div>
         <form style="display:flex; gap:8px;" onsubmit="event.preventDefault(); addQuickTodo();">
           <input type="text" id="quickTodoInput" class="form-control" placeholder="Add a quick task...">
           <button type="submit" class="btn btn-orange">Add</button>
@@ -564,28 +546,14 @@
     </div>
   </div>
 
-  <!-- ARRANGEMENTS TAB -->
+  <!-- PAGE 2c: ARRANGEMENTS TAB -->
   <div id="page-arrangements" class="page">
     <div class="card">
-      <div class="card-title">
-        <span>🎼 Add New Arrangement Record</span>
-      </div>
-      <div class="form-group">
-        <label>Song Title:</label>
-        <input type="text" id="arrSongTitle" class="form-control" placeholder="e.g. Fly Me To The Moon">
-      </div>
-      <div class="form-group">
-        <label>Key:</label>
-        <input type="text" id="arrKey" class="form-control" placeholder="e.g. C Major">
-      </div>
-      <div class="form-group">
-        <label>Tempo / Style:</label>
-        <input type="text" id="arrTempo" class="form-control" placeholder="e.g. 130 BPM (Samba)">
-      </div>
-      <div class="form-group">
-        <label>Arrangement Notes & Details:</label>
-        <textarea id="arrNotes" class="form-control" placeholder="Write structure, intro solos, horn hits..."></textarea>
-      </div>
+      <div class="card-title"><span>🎼 Add New Arrangement Record</span></div>
+      <div class="form-group"><label>Song Title:</label><input type="text" id="arrSongTitle" class="form-control" placeholder="e.g. Fly Me To The Moon"></div>
+      <div class="form-group"><label>Key:</label><input type="text" id="arrKey" class="form-control" placeholder="e.g. C Major"></div>
+      <div class="form-group"><label>Tempo / Style:</label><input type="text" id="arrTempo" class="form-control" placeholder="e.g. 130 BPM (Samba)"></div>
+      <div class="form-group"><label>Arrangement Notes & Details:</label><textarea id="arrNotes" class="form-control" placeholder="Write structure, intro solos, horn hits..."></textarea></div>
       <button class="btn btn-orange" style="width:100%;" onclick="saveArrangement()">+ Save Arrangement Entry</button>
     </div>
 
@@ -607,7 +575,6 @@
   <div id="page-todo" class="page">
     <div class="card">
       <div class="card-title">📩 Follow-ups & Agency Replies</div>
-      
       <div class="form-group">
         <label>Platform:</label>
         <div class="hashtag-cloud" id="platformPicker">
@@ -618,15 +585,8 @@
           <span class="hashtag-chip" onclick="selectPlatform(this, 'Other')">🌐 Other</span>
         </div>
       </div>
-
-      <div class="form-group">
-        <input type="text" id="todoPartyInput" class="form-control" placeholder="Whom / Party name (e.g. Blue Note Promoter)">
-      </div>
-
-      <div class="form-group">
-        <textarea id="todoRemarkInput" class="form-control" placeholder="Remarks..."></textarea>
-      </div>
-
+      <div class="form-group"><input type="text" id="todoPartyInput" class="form-control" placeholder="Whom / Party name (e.g. Blue Note Promoter)"></div>
+      <div class="form-group"><textarea id="todoRemarkInput" class="form-control" placeholder="Remarks..."></textarea></div>
       <button class="btn btn-orange" style="width:100%;" onclick="addFollowupThread()">+ Create Follow-up Thread</button>
     </div>
 
@@ -647,26 +607,14 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR -->
+  <!-- BOTTOM NAV BAR -->
   <nav class="nav-tabs">
-    <button class="nav-btn active" onclick="switchPage('practice', this)">
-      <span class="icon">📅</span>Practice
-    </button>
-    <button class="nav-btn" onclick="switchPage('band-projects', this)">
-      <span class="icon">🎷</span>Band Proj
-    </button>
-    <button class="nav-btn" onclick="switchPage('personal', this)">
-      <span class="icon">🎯</span>Personal
-    </button>
-    <button class="nav-btn" onclick="switchPage('arrangements', this)">
-      <span class="icon">🎼</span>Arrangement
-    </button>
-    <button class="nav-btn" onclick="switchPage('todo', this)">
-      <span class="icon">💬</span>Replies
-    </button>
-    <button class="nav-btn" onclick="switchPage('shows', this)">
-      <span class="icon">🎺</span>Shows
-    </button>
+    <button class="nav-btn active" onclick="switchPage('practice', this)"><span class="icon">📅</span>Practice</button>
+    <button class="nav-btn" onclick="switchPage('band-projects', this)"><span class="icon">🎷</span>Band Proj</button>
+    <button class="nav-btn" onclick="switchPage('personal', this)"><span class="icon">🎯</span>Personal</button>
+    <button class="nav-btn" onclick="switchPage('arrangements', this)"><span class="icon">🎼</span>Arrangement</button>
+    <button class="nav-btn" onclick="switchPage('todo', this)"><span class="icon">💬</span>Replies</button>
+    <button class="nav-btn" onclick="switchPage('shows', this)"><span class="icon">🎺</span>Shows</button>
   </nav>
 
   <!-- MODALS -->
@@ -674,12 +622,7 @@
     <div class="modal-content">
       <div class="card-title" id="bpModalTitle">Add / Edit Band Project</div>
       <input type="hidden" id="editingBpId" value="">
-      
-      <div class="form-group">
-        <label>Project Title:</label>
-        <input type="text" id="bpTitleInput" class="form-control" placeholder="e.g. EP promo shoot & Instagram teasers">
-      </div>
-
+      <div class="form-group"><label>Project Title:</label><input type="text" id="bpTitleInput" class="form-control" placeholder="e.g. EP promo shoot"></div>
       <div class="form-group">
         <label>Select Hashtag(s):</label>
         <div class="hashtag-cloud" id="bpModalHashtags">
@@ -688,11 +631,8 @@
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Arrangements</span>
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#ShortSections</span>
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Performance-related</span>
-          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#IG reels</span>
-          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#IG posts</span>
         </div>
       </div>
-
       <div class="form-group">
         <label>Quick Timeline Finish:</label>
         <select id="bpQuickTimeline" class="form-control" onchange="toggleBpCustomDateInput(this.value)">
@@ -703,17 +643,8 @@
           <option value="CUSTOM">📅 Custom Calendar Date...</option>
         </select>
       </div>
-
-      <div class="form-group" id="bpCustomDateGroup" style="display:none;">
-        <label>Select Target Date:</label>
-        <input type="date" id="bpCustomDate" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <label>Notes / Remarks:</label>
-        <textarea id="bpNotesInput" class="form-control" placeholder="Project details or instructions..."></textarea>
-      </div>
-
+      <div class="form-group" id="bpCustomDateGroup" style="display:none;"><label>Target Date:</label><input type="date" id="bpCustomDate" class="form-control"></div>
+      <div class="form-group"><label>Notes / Remarks:</label><textarea id="bpNotesInput" class="form-control"></textarea></div>
       <div style="display:flex; gap:8px; margin-top:16px;">
         <button class="btn btn-orange" style="flex:1;" onclick="saveBandProject()">Save Project</button>
         <button class="btn btn-outline" onclick="closeModal('bandProjectModal')">Cancel</button>
@@ -725,12 +656,7 @@
     <div class="modal-content">
       <div class="card-title" id="pgModalTitle">Add / Edit Personal Focus</div>
       <input type="hidden" id="editingPgId" value="">
-      
-      <div class="form-group">
-        <label>Goal Description:</label>
-        <input type="text" id="goalTitleInput" class="form-control" placeholder="e.g. 2-5-1 of Black Orpheus bar 3">
-      </div>
-
+      <div class="form-group"><label>Goal Description:</label><input type="text" id="goalTitleInput" class="form-control"></div>
       <div class="form-group">
         <label>Select Hashtag(s):</label>
         <div class="hashtag-cloud" id="modalHashtags">
@@ -738,12 +664,8 @@
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Time/Tight</span>
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Vocab</span>
           <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Composition</span>
-          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Arrangements</span>
-          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#ShortSections</span>
-          <span class="hashtag-chip" onclick="this.classList.toggle('selected')">#Performance-related</span>
         </div>
       </div>
-
       <div class="form-group">
         <label>Quick Timeline Finish:</label>
         <select id="goalQuickTimeline" class="form-control" onchange="toggleCustomDateInput(this.value)">
@@ -754,17 +676,8 @@
           <option value="CUSTOM">📅 Custom Calendar Date...</option>
         </select>
       </div>
-
-      <div class="form-group" id="customDateGroup" style="display:none;">
-        <label>Select Target Date:</label>
-        <input type="date" id="goalCustomDate" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <label>Notes / Remarks:</label>
-        <textarea id="goalNotesInput" class="form-control" placeholder="Add practice remarks or instructions..."></textarea>
-      </div>
-
+      <div class="form-group" id="customDateGroup" style="display:none;"><label>Target Date:</label><input type="date" id="goalCustomDate" class="form-control"></div>
+      <div class="form-group"><label>Notes:</label><textarea id="goalNotesInput" class="form-control"></textarea></div>
       <div style="display:flex; gap:8px; margin-top:16px;">
         <button class="btn btn-orange" style="flex:1;" onclick="savePersonalGoal()">Save Goal</button>
         <button class="btn btn-outline" onclick="closeModal('personalGoalModal')">Cancel</button>
@@ -776,44 +689,24 @@
     <div class="modal-content">
       <div class="card-title" id="showModalTitle">Add / Edit Show</div>
       <input type="hidden" id="editingShowId" value="">
-      
       <div class="form-group"><label>Venue / Event Name:</label><input type="text" id="showVenue" class="form-control"></div>
       <div class="form-group"><label>City:</label><input type="text" id="showCity" class="form-control" value="Hong Kong"></div>
       <div class="form-group"><label>Date:</label><input type="date" id="showDate" class="form-control"></div>
       <div class="form-group"><label>Start Time:</label><input type="time" id="showTime" class="form-control" value="20:00"></div>
       <div class="form-group"><label>Soundcheck Time:</label><input type="time" id="showSoundcheck" class="form-control" value="18:00"></div>
-      <div class="form-group"><label>Band Fee Guarantee ($):</label><input type="number" id="showFee" class="form-control" placeholder="Optional"></div>
-      
-      <div class="form-group">
-        <label>Travel Fee Covered?</label>
-        <select id="showTravelCovered" class="form-control">
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Travel Fee Amount ($):</label><input type="number" id="showTravelAmount" class="form-control" placeholder="0"></div>
-      
+      <div class="form-group"><label>Band Fee Guarantee ($):</label><input type="number" id="showFee" class="form-control"></div>
       <div class="form-group">
         <label>Status:</label>
         <select id="showStatus" class="form-control">
-          <option value="CONFIRMED">✅ Confirmed (Full Shimmer)</option>
-          <option value="TBC">❓ TBC (Dashed Gold)</option>
+          <option value="CONFIRMED">✅ Confirmed</option>
+          <option value="TBC">❓ TBC</option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label>Who is going? (Member Attendance):</label>
-        <div class="checkbox-grid" id="showAttendeesGrid"></div>
-      </div>
-
-      <div class="form-group">
-        <label>Show Remarks / Notes:</label>
-        <textarea id="showRemarksInput" class="form-control" placeholder="Add setup, dress code, contact, or logistics remarks..."></textarea>
-      </div>
-
+      <div class="form-group"><label>Who is going? (Attendees):</label><div class="checkbox-grid" id="showAttendeesGrid"></div></div>
+      <div class="form-group"><label>Show Remarks:</label><textarea id="showRemarksInput" class="form-control"></textarea></div>
       <div style="display:flex; gap:8px; margin-top:16px;">
         <button class="btn btn-orange" style="flex:1;" onclick="saveShow()">Save Show</button>
-        <button class="btn btn-outline" onclick="cancelShowModal()">Cancel</button>
+        <button class="btn btn-outline" onclick="closeModal('showModal')">Cancel</button>
       </div>
     </div>
   </div>
@@ -832,7 +725,6 @@
   </div>
 
   <script>
-    // Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyByh1Z9Ji6VMFL2kZIgVfsAahmQsKFDbOs",
       authDomain: "lazytacosscheduler-c0ddf.firebaseapp.com",
@@ -843,19 +735,18 @@
       appId: "1:967526397213:web:f5a6446e1279570385ddf4"
     };
 
-    // Initialize Firebase Cloud Database
     let db = null;
     try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database().ref('lazy_tacos_band_os');
-    } catch(e) {
-      console.log('Running in local mode', e);
-    }
+      if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database().ref('lazy_tacos_band_os');
+      }
+    } catch(e) { console.log('Running local mode:', e); }
 
     const HK_HOLIDAYS = {
-      "2026-01-01": "New Year's Day", "2026-02-17": "Lunar New Year", "2026-02-18": "Lunar New Year",
-      "2026-02-19": "Lunar New Year", "2026-04-03": "Good Friday", "2026-04-04": "Ching Ming",
-      "2026-04-06": "Easter Monday", "2026-05-01": "Labour Day", "2026-05-24": "Buddha's Birthday",
+      "2026-01-01": "New Year", "2026-02-17": "Lunar NY", "2026-02-18": "Lunar NY",
+      "2026-02-19": "Lunar NY", "2026-04-03": "Good Friday", "2026-04-04": "Ching Ming",
+      "2026-04-06": "Easter Mon", "2026-05-01": "Labour Day", "2026-05-24": "Buddha's Bday",
       "2026-06-19": "Tuen Ng", "2026-07-01": "HKSAR Day", "2026-09-26": "Mid-Autumn",
       "2026-10-01": "National Day", "2026-10-18": "Chung Yeung", "2026-12-25": "Christmas",
       "2026-12-26": "Boxing Day"
@@ -890,38 +781,36 @@
     window.onload = function() {
       listenToCloudDatabase();
       loadLocalStorage();
-      populateUserDropdown();
-      renderMemberPills();
-      renderCalendar();
-      renderShows();
-      renderBandProjects();
-      renderPersonalSection();
-      renderArrangements();
-      renderPracticePersonalSync();
-      updateCountdownBanner();
+      renderAllViews();
     };
 
-    /* REALTIME CLOUD SYNC ENGINE */
     function listenToCloudDatabase() {
       if (!db) return;
       db.on('value', (snapshot) => {
         const cloudData = snapshot.val();
         if (cloudData) {
           appData = cloudData;
-          if (!appData.members) appData.members = DEFAULT_MEMBERS;
-          if (!appData.personalGoals) appData.personalGoals = [];
-          if (!appData.quickTodos) appData.quickTodos = [];
-          if (!appData.bandProjects) appData.bandProjects = [];
-          if (!appData.arrangements) appData.arrangements = [];
-          if (!appData.shows) appData.shows = [];
-          if (!appData.threads) appData.threads = [];
+          sanitizeData();
           saveState(false);
           renderAllViews();
         }
       });
     }
 
+    function sanitizeData() {
+      if (!appData.members) appData.members = DEFAULT_MEMBERS;
+      if (!appData.availability) appData.availability = {};
+      if (!appData.agendas) appData.agendas = {};
+      if (!appData.shows) appData.shows = [];
+      if (!appData.bandProjects) appData.bandProjects = [];
+      if (!appData.personalGoals) appData.personalGoals = [];
+      if (!appData.quickTodos) appData.quickTodos = [];
+      if (!appData.threads) appData.threads = [];
+      if (!appData.arrangements) appData.arrangements = [];
+    }
+
     function renderAllViews() {
+      sanitizeData();
       populateUserDropdown();
       renderMemberPills();
       renderCalendar();
@@ -931,32 +820,20 @@
       renderArrangements();
       renderPracticePersonalSync();
       updateCountdownBanner();
-      const statusEl = document.getElementById('syncStatus');
-      if (statusEl) statusEl.textContent = "Live Cloud Sync";
     }
 
     function saveState(uploadToCloud = true) {
       localStorage.setItem('lazy_tacos_data', JSON.stringify(appData));
-      if (uploadToCloud && db) {
-        db.set(appData);
-      }
+      if (uploadToCloud && db) db.set(appData);
       updateCountdownBanner();
     }
 
     function loadLocalStorage() {
       const saved = localStorage.getItem('lazy_tacos_data');
       if (saved) {
-        try { 
-          const parsed = JSON.parse(saved);
-          appData = { ...appData, ...parsed };
-          if (!appData.bandProjects) appData.bandProjects = [];
-          if (!appData.personalGoals) appData.personalGoals = [];
-          if (!appData.quickTodos) appData.quickTodos = [];
-          if (!appData.arrangements) appData.arrangements = [];
-          if (!appData.shows) appData.shows = [];
-          if (!appData.threads) appData.threads = [];
-        } catch(e){}
+        try { appData = { ...appData, ...JSON.parse(saved) }; } catch(e){}
       }
+      sanitizeData();
     }
 
     function exportData() {
@@ -999,59 +876,83 @@
       if (pageId === 'todo') renderThreads();
     }
 
+    /* =========================================================
+       CALENDAR RENDERER (TABLE-BASED FOR RELIABLE Safari DISPLAY)
+       ========================================================= */
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       document.getElementById('calendarMonthTitle').textContent = `${monthNames[month]} ${year}`;
 
-      const grid = document.getElementById('calendarGrid');
-      grid.innerHTML = '';
+      const tbody = document.getElementById('calendarTableBody');
+      tbody.innerHTML = '';
 
-      const firstDay = new Date(year, month, 1).getDay();
+      const firstDayIndex = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-      let startOffset = firstDay - 1;
+      
+      let startOffset = firstDayIndex - 1;
       if (startOffset === -1) startOffset = 6;
 
+      let currentDay = 1;
+      let row = document.createElement('tr');
+
+      // Empty cells before start of month
       for (let i = 0; i < startOffset; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'cal-cell other-month';
-        grid.appendChild(emptyCell);
+        const emptyTd = document.createElement('td');
+        emptyTd.className = 'other-month';
+        row.appendChild(emptyTd);
       }
 
-      for (let day = 1; day <= daysInMonth; day++) {
+      for (let i = startOffset; currentDay <= daysInMonth; i++) {
+        if (i > 0 && i % 7 === 0) {
+          tbody.appendChild(row);
+          row = document.createElement('tr');
+        }
+
+        const day = currentDay;
         const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const cell = document.createElement('div');
-        cell.className = 'cal-cell';
-        if (dateStr === selectedCalDate) cell.classList.add('selected');
+        const td = document.createElement('td');
+
+        if (dateStr === selectedCalDate) td.classList.add('selected');
 
         const isHkHoliday = !!HK_HOLIDAYS[dateStr];
-        if (isHkHoliday) cell.classList.add('hk-holiday');
+        if (isHkHoliday) td.classList.add('hk-holiday');
 
         const dayAvail = appData.availability[dateStr] || {};
         const availableMemberCount = Object.keys(dayAvail).length;
-        if (availableMemberCount >= 3) cell.classList.add('has-overlap');
+        if (availableMemberCount >= 3) td.classList.add('has-overlap');
         if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          cell.classList.add('full-band');
+          td.classList.add('full-band');
         }
 
-        let innerHTML = `<div class="date-num">${day}</div>`;
+        let innerHTML = `<div class="date-num-display">${day}</div>`;
+
         if (isHkHoliday) {
-          innerHTML += `<div class="hk-tag">🇭🇰 ${HK_HOLIDAYS[dateStr]}</div>`;
+          innerHTML += `<span class="cell-badge badge-holiday">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
         } else if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          innerHTML += `<div style="font-size:0.55rem; color:var(--c-olive); font-weight:bold;">👑 Full Band</div>`;
+          innerHTML += `<span class="cell-badge badge-fullband">👑 Full Band</span>`;
         }
 
-        const dayShow = appData.shows.find(s => s.date === dateStr);
+        const dayShow = (appData.shows || []).find(s => s.date === dateStr);
         if (dayShow) {
-          const isConfirmed = dayShow.status === 'CONFIRMED';
-          innerHTML += `<div class="gold-show-plate ${isConfirmed ? 'confirmed' : 'tbc'}">🎷 ${dayShow.venue}</div>`;
+          innerHTML += `<span class="cell-badge badge-gig">🎷 ${dayShow.venue}</span>`;
         }
 
-        cell.innerHTML = innerHTML;
-        cell.onclick = () => selectCalendarDate(dateStr);
-        grid.appendChild(cell);
+        td.innerHTML = innerHTML;
+        td.onclick = () => selectCalendarDate(dateStr);
+        row.appendChild(td);
+
+        currentDay++;
       }
+
+      // Fill remaining empty cells in final week row
+      while (row.children.length < 7) {
+        const emptyTd = document.createElement('td');
+        emptyTd.className = 'other-month';
+        row.appendChild(emptyTd);
+      }
+      tbody.appendChild(row);
 
       renderDayDetails(selectedCalDate);
       renderBestSlots();
@@ -1066,9 +967,7 @@
       selectedCalDate = dateStr;
       renderCalendar();
       const detailCard = document.getElementById('dayDetailCard');
-      if (detailCard) {
-        detailCard.scrollIntoView({ behavior: 'auto', block: 'start' });
-      }
+      if (detailCard) detailCard.scrollIntoView({ behavior: 'auto', block: 'start' });
     }
 
     function renderDayDetails(dateStr) {
@@ -1080,7 +979,7 @@
       const isHkHoliday = !!HK_HOLIDAYS[dateStr];
 
       if (isHkHoliday) {
-        holidayTag.innerHTML = `<span class="hk-tag" style="font-size:0.8rem; padding:3px 6px;">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
+        holidayTag.innerHTML = `<span class="cell-badge badge-holiday" style="font-size:0.8rem; padding:3px 6px;">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
       } else {
         holidayTag.innerHTML = isWeekend ? `<span style="color:var(--c-skyblue); font-size:0.8rem;">Weekend</span>` : `<span style="color:var(--c-orange); font-size:0.8rem;">Weekday</span>`;
       }
@@ -1156,11 +1055,8 @@
       if (keys.length === 0) {
         const dObj = new Date(selectedCalDate);
         const isWeekend = (dObj.getDay() === 0 || dObj.getDay() === 6);
-        if (isWeekend) {
-          userAvail['19'] = status;
-        } else {
-          userAvail['NIGHT'] = status;
-        }
+        if (isWeekend) userAvail['19'] = status;
+        else userAvail['NIGHT'] = status;
       } else {
         keys.forEach(k => { userAvail[k] = status; });
       }
@@ -1308,7 +1204,6 @@
         document.getElementById('bpTitleInput').value = '';
         document.getElementById('bpNotesInput').value = '';
       }
-
       document.getElementById('bandProjectModal').classList.add('active');
     }
 
@@ -1330,15 +1225,9 @@
       if (timelineSelect === 'CUSTOM') {
         targetDate = document.getElementById('bpCustomDate').value || '9999-12-31';
         deadlineText = targetDate;
-      } else {
-        if (timelineSelect === '今すぐ') targetDate = formatDate(new Date());
-        if (timelineSelect === '返屋企') targetDate = formatDate(new Date(Date.now() + 86400000));
-        if (timelineSelect === '下次團練') targetDate = formatDate(new Date(Date.now() + 86400000 * 3));
-        if (timelineSelect === '下次show前') targetDate = formatDate(new Date(Date.now() + 86400000 * 7));
       }
 
       const editingId = document.getElementById('editingBpId').value;
-
       if (editingId) {
         const p = appData.bandProjects.find(x => x.id === editingId);
         if (p) {
@@ -1389,8 +1278,8 @@
           </div>
           ${p.notes ? `<div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">📝 ${p.notes}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openBandProjectModal('${p.id}')">✏️ Edit</button>
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deleteBandProject('${p.id}')">🗑️ Delete</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openBandProjectModal('${p.id}')">✏️️ Edit</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deleteBandProject('${p.id}')">🗑️️ Delete</button>
           </div>
         `;
         container.appendChild(card);
@@ -1426,7 +1315,6 @@
         document.getElementById('goalTitleInput').value = '';
         document.getElementById('goalNotesInput').value = '';
       }
-
       document.getElementById('personalGoalModal').classList.add('active');
     }
 
@@ -1448,15 +1336,9 @@
       if (timelineSelect === 'CUSTOM') {
         targetDate = document.getElementById('goalCustomDate').value || '9999-12-31';
         deadlineText = targetDate;
-      } else {
-        if (timelineSelect === '今すぐ') targetDate = formatDate(new Date());
-        if (timelineSelect === '返屋企') targetDate = formatDate(new Date(Date.now() + 86400000));
-        if (timelineSelect === '下次團練') targetDate = formatDate(new Date(Date.now() + 86400000 * 3));
-        if (timelineSelect === '下次show前') targetDate = formatDate(new Date(Date.now() + 86400000 * 7));
       }
 
       const editingId = document.getElementById('editingPgId').value;
-
       if (!appData.personalGoals) appData.personalGoals = [];
 
       if (editingId) {
@@ -1573,7 +1455,6 @@
 
       tagsList.forEach(tag => {
         const matchingGoals = appData.personalGoals.filter(g => (g.tags || []).includes(tag) && !g.completed);
-        
         const section = document.createElement('div');
         section.style.marginBottom = '12px';
         section.innerHTML = `<strong style="color:var(--c-skyblue);">${tag} (${matchingGoals.length}):</strong>`;
@@ -1638,7 +1519,6 @@
       if (!song) return alert('Song title required');
 
       if (!appData.arrangements) appData.arrangements = [];
-
       appData.arrangements.push({
         id: 'ar' + Date.now(),
         song,
@@ -1742,8 +1622,8 @@
             <div class="project-title">${t.platform === 'WhatsApp' ? '💬' : '📧'} ${t.party}</div>
             <button class="btn btn-outline" style="font-size:0.6rem;" onclick="appData.threads.splice(${idx},1); saveState(); renderThreads();">Delete</button>
           </div>
-          <div class="thread-box">
-            ${t.logs.map(l => `<div class="thread-entry"><span class="thread-time">${l.date}:</span>${l.text}</div>`).join('')}
+          <div style="margin-top:6px; font-size:0.85rem;">
+            ${t.logs.map(l => `<div><strong>${l.date}:</strong>${l.text}</div>`).join('')}
           </div>
         `;
         list.appendChild(div);
@@ -1780,8 +1660,6 @@
           document.getElementById('showTime').value = s.time || '20:00';
           document.getElementById('showSoundcheck').value = s.soundcheck || '18:00';
           document.getElementById('showFee').value = s.fee || '';
-          document.getElementById('showTravelCovered').value = s.travelCovered || 'No';
-          document.getElementById('showTravelAmount').value = s.travelAmount || '0';
           document.getElementById('showStatus').value = s.status || 'CONFIRMED';
           document.getElementById('showRemarksInput').value = s.remarks || '';
           renderAttendeesCheckboxGrid(s.attendees || []);
@@ -1794,20 +1672,12 @@
         document.getElementById('showTime').value = '20:00';
         document.getElementById('showSoundcheck').value = '18:00';
         document.getElementById('showFee').value = '';
-        document.getElementById('showTravelCovered').value = 'No';
-        document.getElementById('showTravelAmount').value = '0';
         document.getElementById('showStatus').value = 'CONFIRMED';
         document.getElementById('showRemarksInput').value = '';
         renderAttendeesCheckboxGrid([]);
       }
 
       document.getElementById('showModal').classList.add('active');
-    }
-
-    function cancelShowModal() {
-      if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-        closeModal('showModal');
-      }
     }
 
     function saveShow() {
@@ -1830,8 +1700,6 @@
           s.time = document.getElementById('showTime').value;
           s.soundcheck = document.getElementById('showSoundcheck').value;
           s.fee = document.getElementById('showFee').value;
-          s.travelCovered = document.getElementById('showTravelCovered').value;
-          s.travelAmount = document.getElementById('showTravelAmount').value;
           s.status = document.getElementById('showStatus').value;
           s.remarks = document.getElementById('showRemarksInput').value;
           s.attendees = attendees;
@@ -1845,8 +1713,6 @@
           time: document.getElementById('showTime').value,
           soundcheck: document.getElementById('showSoundcheck').value,
           fee: document.getElementById('showFee').value,
-          travelCovered: document.getElementById('showTravelCovered').value,
-          travelAmount: document.getElementById('showTravelAmount').value,
           status: document.getElementById('showStatus').value,
           remarks: document.getElementById('showRemarksInput').value,
           attendees
@@ -1888,9 +1754,6 @@
           </div>
           <div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:4px;">
             📅 ${s.date} @ ${s.time} | Soundcheck: ${s.soundcheck}
-          </div>
-          <div style="font-size:0.8rem; margin-top:4px;">
-            💰 Fee: ${s.fee ? '$' + s.fee : 'TBD'} | 🚗 Travel Covered: ${s.travelCovered} (${s.travelAmount ? '$'+s.travelAmount : '$0'})
           </div>
           <div style="font-size:0.8rem; margin-top:4px; color:var(--c-orange);">
             👥 Attendees: ${attendeeNames || 'None selected'}
