@@ -173,9 +173,27 @@
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .month-title { font-size: 1.2rem; font-weight: bold; color: var(--c-ivory); }
 
-    /* =========================================================
-       NEW ORANGE GLOWING CALENDAR CARDS DESIGN
-       ========================================================= */
+    /* TARGET ROSTER SELECTOR BAR */
+    .target-roster-box {
+      background: #1E120C;
+      border: 1px solid #553C30;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .target-roster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .target-roster-title {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--c-orange);
+    }
+
+    /* ORANGE GLOWING CALENDAR CARDS DESIGN */
     .cal-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -196,8 +214,8 @@
     }
     .cal-table td {
       width: 14.28%;
-      height: 85px;
-      max-height: 85px;
+      height: 90px;
+      max-height: 90px;
       background: #170E0A;
       border: 1px solid #322018;
       border-radius: 12px;
@@ -249,7 +267,7 @@
       font-weight: bold;
     }
 
-    /* FULL BAND GOLD BANNER */
+    /* FULL BAND CROWN BADGE */
     .full-band-banner {
       background: linear-gradient(135deg, #FFE259 0%, #FFA751 100%);
       color: #000;
@@ -262,6 +280,30 @@
       text-transform: uppercase;
       letter-spacing: 0.3px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    /* SOLID GOLD SHINING SHOW BADGE */
+    .solid-gold-show-badge {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+      color: #1A0D00;
+      font-size: 0.6rem;
+      font-weight: 900;
+      text-align: center;
+      border-radius: 5px;
+      padding: 3px 2px;
+      margin-top: 3px;
+      border: 1px solid #FFF;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.9), inset 0 0 4px rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      animation: goldGlowPulse 2s infinite alternate;
+    }
+
+    @keyframes goldGlowPulse {
+      0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.6); }
+      100% { box-shadow: 0 0 14px rgba(252, 246, 186, 0.95); }
     }
 
     /* MEMBER AVATAR DOTS */
@@ -489,11 +531,36 @@
 
   <!-- PAGE 1: PRACTICE SCHEDULER & CALENDAR -->
   <div id="page-practice" class="page active">
+    
+    <!-- TARGET PRACTICE ROSTER CONTROL BOX -->
+    <div class="target-roster-box">
+      <div class="target-roster-header">
+        <span class="target-roster-title">🎯 Practice Alignment Roster:</span>
+        <button class="btn btn-outline" style="padding:2px 8px; font-size:0.7rem;" onclick="selectAllRosterMembers()">Select ALL</button>
+      </div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <select id="showRosterSelect" class="form-control" style="padding:6px; font-size:0.85rem;" onchange="handleShowRosterSelectChange(this.value)">
+          <option value="ALL">All Band Members (Default 6/6)</option>
+        </select>
+      </div>
+      <div id="rosterMemberChips" class="hashtag-cloud" style="margin:0;"></div>
+    </div>
+
     <div class="card">
       <div class="calendar-header">
         <button class="btn btn-outline" onclick="changeMonth(-1)">◀ Prev</button>
         <div class="month-title" id="calendarMonthTitle">October 2026</div>
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
+      </div>
+
+      <!-- RESET BUTTONS BAR -->
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button class="btn btn-outline" style="flex:1; font-size:0.75rem; padding:6px; border-color:#E04A1D;" onclick="resetMyMonthlySchedule()">
+          🧹 Reset My Month
+        </button>
+        <button class="btn btn-outline" style="flex:1; font-size:0.75rem; padding:6px; border-color:#C0392B; color:#FF8888;" onclick="resetAllMembersMonthlySchedule()">
+          ⚠️ Reset ALL Members (Month)
+        </button>
       </div>
 
       <div class="cal-table-wrapper">
@@ -833,6 +900,7 @@
       arrangements: []
     };
 
+    let targetRosterMemberIds = []; // Filtered scope for target practice alignment
     let currentDate = new Date();
     let selectedCalDate = formatDate(new Date());
     let selectedPlatform = 'WhatsApp';
@@ -866,11 +934,17 @@
       if (!appData.quickTodos) appData.quickTodos = [];
       if (!appData.threads) appData.threads = [];
       if (!appData.arrangements) appData.arrangements = [];
+
+      if (targetRosterMemberIds.length === 0) {
+        targetRosterMemberIds = appData.members.map(m => m.id);
+      }
     }
 
     function renderAllViews() {
       sanitizeData();
       populateUserDropdown();
+      populateShowRosterDropdown();
+      renderTargetRosterChips();
       renderMemberPills();
       renderCalendar();
       renderShows();
@@ -921,6 +995,101 @@
       renderDayDetails(selectedCalDate);
     }
 
+    /* OPTION 1: SHOW ROSTER SELECTOR LOGIC */
+    function populateShowRosterDropdown() {
+      const sel = document.getElementById('showRosterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="ALL">All Band Members (Default ${appData.members.length}/${appData.members.length})</option>`;
+      (appData.shows || []).forEach(s => {
+        const count = (s.attendees || []).length;
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `🎺 Show: ${s.venue} (${s.date}) [${count} roster]`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function handleShowRosterSelectChange(val) {
+      if (val === 'ALL') {
+        targetRosterMemberIds = appData.members.map(m => m.id);
+      } else {
+        const s = (appData.shows || []).find(x => x.id === val);
+        if (s && s.attendees) {
+          targetRosterMemberIds = [...s.attendees];
+        }
+      }
+      renderTargetRosterChips();
+      renderCalendar();
+    }
+
+    function renderTargetRosterChips() {
+      const container = document.getElementById('rosterMemberChips');
+      if (!container) return;
+      container.innerHTML = '';
+
+      appData.members.forEach(m => {
+        const isSelected = targetRosterMemberIds.includes(m.id);
+        const chip = document.createElement('span');
+        chip.className = `hashtag-chip ${isSelected ? 'selected' : ''}`;
+        chip.style.borderColor = m.color;
+        chip.innerHTML = `${m.name} (${m.role})`;
+        chip.onclick = () => {
+          if (isSelected) {
+            targetRosterMemberIds = targetRosterMemberIds.filter(id => id !== m.id);
+          } else {
+            targetRosterMemberIds.push(m.id);
+          }
+          renderTargetRosterChips();
+          renderCalendar();
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    function selectAllRosterMembers() {
+      targetRosterMemberIds = appData.members.map(m => m.id);
+      document.getElementById('showRosterSelect').value = 'ALL';
+      renderTargetRosterChips();
+      renderCalendar();
+    }
+
+    /* MONTHLY SCHEDULE RESET BUTTONS */
+    function resetMyMonthlySchedule() {
+      const year = currentDate.getFullYear();
+      const monthStr = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const monthPrefix = `${year}-${monthStr}`;
+
+      if (!confirm(`Clear your availability entries for ${monthPrefix}?`)) return;
+
+      Object.keys(appData.availability).forEach(dateStr => {
+        if (dateStr.startsWith(monthPrefix) && appData.availability[dateStr][appData.currentUser]) {
+          delete appData.availability[dateStr][appData.currentUser];
+        }
+      });
+
+      saveState();
+      renderCalendar();
+      alert('Your monthly schedule entries have been cleared.');
+    }
+
+    function resetAllMembersMonthlySchedule() {
+      const year = currentDate.getFullYear();
+      const monthStr = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const monthPrefix = `${year}-${monthStr}`;
+
+      if (!confirm(`⚠️ ARE YOU SURE?\nThis will erase ALL schedule entries from ALL members for ${monthPrefix}!`)) return;
+
+      Object.keys(appData.availability).forEach(dateStr => {
+        if (dateStr.startsWith(monthPrefix)) {
+          delete appData.availability[dateStr];
+        }
+      });
+
+      saveState();
+      renderCalendar();
+      alert(`All entries for ${monthPrefix} have been reset.`);
+    }
+
     function switchPage(pageId, btnEl) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -936,7 +1105,7 @@
     }
 
     /* =========================================================
-       NEW GLOWING ORANGE CALENDAR CARD RENDERER
+       GLOWING ORANGE CALENDAR & SOLID GOLD SHOW BADGES
        ========================================================= */
     function renderCalendar() {
       const year = currentDate.getFullYear();
@@ -974,15 +1143,19 @@
 
         const dayAvail = appData.availability[dateStr] || {};
         const availableMemberIds = Object.keys(dayAvail);
-        const hasSchedule = availableMemberIds.length > 0;
+        
+        // Filter against target practice roster (Option 1)
+        const targetAvailableIds = availableMemberIds.filter(id => targetRosterMemberIds.includes(id));
+        const hasSchedule = targetAvailableIds.length > 0;
 
         if (hasSchedule) td.classList.add('has-schedule');
         if (dateStr === selectedCalDate) td.classList.add('selected');
 
-        const isFullBand = availableMemberIds.length >= appData.members.length && appData.members.length > 0;
+        const targetRosterCount = targetRosterMemberIds.length;
+        const isFullTargetBand = targetRosterCount > 0 && targetAvailableIds.length >= targetRosterCount;
 
         let totalHoursCount = 0;
-        availableMemberIds.forEach(mId => {
+        targetAvailableIds.forEach(mId => {
           totalHoursCount += Object.keys(dayAvail[mId] || {}).length;
         });
 
@@ -996,13 +1169,18 @@
           </div>
         `;
 
-        if (isFullBand) {
+        if (isFullTargetBand) {
           cardContent += `<div class="full-band-banner">👑 FULL BAND</div>`;
+        }
+
+        const dayShow = (appData.shows || []).find(s => s.date === dateStr);
+        if (dayShow) {
+          cardContent += `<span class="solid-gold-show-badge">🎷 GIG: ${dayShow.venue}</span>`;
         }
 
         if (hasSchedule) {
           cardContent += `<div class="avatar-dots-row">`;
-          availableMemberIds.slice(0, 4).forEach(mId => {
+          targetAvailableIds.slice(0, 4).forEach(mId => {
             const m = appData.members.find(x => x.id === mId);
             if (m) {
               cardContent += `<div class="mini-avatar-dot" style="background:${m.color}">${m.name.charAt(0)}</div>`;
@@ -1182,9 +1360,7 @@
       });
     }
 
-    /* =========================================================
-       SORTED BEST PRACTICE SLOTS & SMART AI ADVISOR
-       ========================================================= */
+    /* SORTED BEST PRACTICE SLOTS & SMART AI ADVISOR */
     function renderBestSlots() {
       const list = document.getElementById('bestSlotsList');
       const aiContainer = document.getElementById('aiCommentContainer');
@@ -1194,32 +1370,35 @@
       let ranked = [];
       Object.keys(appData.availability).forEach(dateStr => {
         const dayData = appData.availability[dateStr];
-        const memberIds = Object.keys(dayData);
+        const allMemberIds = Object.keys(dayData);
+        const targetAvailableIds = allMemberIds.filter(id => targetRosterMemberIds.includes(id));
+
         let totalHours = 0;
-        memberIds.forEach(mId => {
+        targetAvailableIds.forEach(mId => {
           totalHours += Object.keys(dayData[mId] || {}).length;
         });
 
-        if (memberIds.length > 0) {
+        if (targetAvailableIds.length > 0) {
           ranked.push({
             dateStr,
-            memberCount: memberIds.length,
+            memberCount: targetAvailableIds.length,
             totalHours,
-            memberIds
+            memberIds: targetAvailableIds
           });
         }
       });
 
-      // SORT DESCENDING BY MEMBER COUNT, THEN BY TOTAL AVAILABLE HOURS
       ranked.sort((a,b) => {
         if (b.memberCount !== a.memberCount) return b.memberCount - a.memberCount;
         return b.totalHours - a.totalHours;
       });
 
       if (ranked.length === 0) {
-        list.innerHTML = `<div style="color:#888; margin-top:6px;">No practice availability entered yet.</div>`;
+        list.innerHTML = `<div style="color:#888; margin-top:6px;">No practice availability entered yet for selected roster.</div>`;
         return;
       }
+
+      const targetTotal = targetRosterMemberIds.length;
 
       ranked.slice(0, 5).forEach((item, idx) => {
         const div = document.createElement('div');
@@ -1239,7 +1418,7 @@
               <span class="best-slot-rank">#${idx+1}</span>
               <strong>${item.dateStr}</strong>
             </div>
-            <span style="font-weight:bold; color:var(--c-orange);">${item.memberCount} / ${appData.members.length} members</span>
+            <span style="font-weight:bold; color:var(--c-orange);">${item.memberCount} / ${targetTotal} roster members</span>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
             <div>${memberDotsHTML}</div>
@@ -1250,16 +1429,15 @@
       });
 
       // AI ADVISOR RECOMMENDATION LOGIC
-      const totalBandCount = appData.members.length;
-      const nearMiss = ranked.find(r => r.memberCount === totalBandCount - 1);
-
+      const nearMiss = ranked.find(r => r.memberCount === targetTotal - 1);
       if (nearMiss) {
-        const missingMember = appData.members.find(m => !nearMiss.memberIds.includes(m.id));
+        const missingMemberId = targetRosterMemberIds.find(id => !nearMiss.memberIds.includes(id));
+        const missingMember = appData.members.find(m => m.id === missingMemberId);
         if (missingMember) {
           aiContainer.innerHTML = `
             <div class="ai-comment-box">
               🤖 <strong>AI Assistant Recommendation:</strong><br>
-              <strong>${nearMiss.dateStr}</strong> is 1 member away from a <strong>FULL BAND</strong> practice session! If <strong>${missingMember.name} (${missingMember.role})</strong> could also adjust their schedule, you'll have 100% full band practice!
+              <strong>${nearMiss.dateStr}</strong> is 1 member away from a <strong>FULL ROSTER</strong> practice! If <strong>${missingMember.name} (${missingMember.role})</strong> can adjust their schedule, you'll have 100% full practice!
             </div>
           `;
         }
@@ -1855,6 +2033,7 @@
       closeModal('showModal');
       renderShows();
       renderCalendar();
+      populateShowRosterDropdown();
     }
 
     function renderShows() {
@@ -1888,12 +2067,12 @@
             📅 ${s.date} @ ${s.time} | Soundcheck: ${s.soundcheck}
           </div>
           <div style="font-size:0.8rem; margin-top:4px; color:var(--c-orange);">
-            👥 Attendees: ${attendeeNames || 'None selected'}
+            👥 Attendees (${(s.attendees || []).length}): ${attendeeNames || 'None selected'}
           </div>
           ${s.remarks ? `<div style="font-size:0.8rem; margin-top:4px; font-style:italic; color:#CCC;">📝 Remarks: ${s.remarks}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
             <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="openShowModal('${s.id}')">✏️ Edit</button>
-            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 6px;" onclick="deleteShow('${s.id}')">🗑️ Delete</button>
+            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="deleteShow('${s.id}')">🗑️ Delete</button>
           </div>
         `;
         list.appendChild(card);
@@ -1907,6 +2086,7 @@
         saveState();
         renderShows();
         renderCalendar();
+        populateShowRosterDropdown();
       }
     }
 
