@@ -11,15 +11,15 @@
 
   <style>
     :root {
-      --c-bg: #241812;          /* Dark Brown base */
-      --c-card: #2E2019;        /* Lighter brown card bg */
+      --c-bg: #180E0A;          /* Deeper dark base */
+      --c-card: #261710;        /* Card bg */
       --c-ivory: #FAF5E8;       /* Ivory text */
       --c-orange: #E04A1D;      /* Bold Orange accent */
       --c-cobalt: #1C3F80;      /* Cobalt Blue */
       --c-olive: #7F8752;       /* Olive Green success */
       --c-skyblue: #A3CFE5;     /* Sky Blue tags */
-      --c-hk-pink: #FF2A75;     /* Neon Pink for HK Holidays */
-      --c-gold: #D4AF37;        /* Gold for Gigs */
+      --c-hk-pink: #FF2A75;     /* HK Holiday Pink */
+      --c-gold: #D4AF37;        /* Gold for Gigs/Full Band */
       --c-red: #C0392B;         /* Red for high urgency */
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -35,7 +35,7 @@
     }
 
     header {
-      background: #19100C;
+      background: #120A07;
       padding: 12px 16px;
       position: sticky;
       top: 0;
@@ -85,7 +85,7 @@
     }
 
     .user-selector-bar {
-      background: #1F150F;
+      background: #1B0F0A;
       padding: 10px 16px;
       display: flex;
       align-items: center;
@@ -107,7 +107,7 @@
     .nav-tabs {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      background: #140C08;
+      background: #100705;
       display: flex;
       justify-content: space-around;
       border-top: 2px solid #3D2B22;
@@ -174,7 +174,7 @@
     .month-title { font-size: 1.2rem; font-weight: bold; color: var(--c-ivory); }
 
     /* =========================================================
-       CALENDAR TABLE STYLES (REWRITTEN FOR GUARANTEED SAFARI COMPATIBILITY)
+       NEW ORANGE GLOWING CALENDAR CARDS DESIGN
        ========================================================= */
     .cal-table-wrapper {
       width: 100%;
@@ -183,7 +183,7 @@
     .cal-table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 4px;
+      border-spacing: 6px;
       table-layout: fixed;
     }
     .cal-table th {
@@ -196,69 +196,127 @@
     }
     .cal-table td {
       width: 14.28%;
-      height: 60px;
-      max-height: 60px;
-      background: #1A100B;
-      border: 1px solid #38251B;
-      border-radius: 6px;
+      height: 85px;
+      max-height: 85px;
+      background: #170E0A;
+      border: 1px solid #322018;
+      border-radius: 12px;
       vertical-align: top;
-      padding: 4px 2px;
+      padding: 6px 4px;
       cursor: pointer;
       box-sizing: border-box;
-      text-align: center;
+      text-align: left;
+      position: relative;
+      transition: all 0.2s ease-in-out;
     }
     .cal-table td.other-month {
-      opacity: 0.15;
+      opacity: 0.12;
       pointer-events: none;
       background: transparent;
       border: 1px dashed #2A1A12;
     }
+
+    /* ORANGE GLOW EFFECT FOR SCHEDULED DAYS */
+    .cal-table td.has-schedule {
+      border: 1.5px solid #FF6B35 !important;
+      box-shadow: 0 0 12px rgba(224, 74, 29, 0.55), inset 0 0 8px rgba(224, 74, 29, 0.15);
+      background: linear-gradient(180deg, #24140D 0%, #190C08 100%);
+    }
+
     .cal-table td.selected {
-      border: 2px solid var(--c-orange) !important;
-      background: rgba(224, 74, 29, 0.25) !important;
-    }
-    .cal-table td.has-overlap {
-      box-shadow: inset 0 0 6px rgba(224, 74, 29, 0.7);
-      border-color: var(--c-orange);
-    }
-    .cal-table td.full-band {
-      box-shadow: 0 0 8px rgba(127, 135, 82, 0.8);
-      border: 2px solid var(--c-olive) !important;
-      background: rgba(127, 135, 82, 0.2) !important;
-    }
-    .cal-table td.hk-holiday {
-      background: #40061A !important;
-      border: 1.5px solid var(--c-hk-pink) !important;
+      border: 2px solid #FFF !important;
+      box-shadow: 0 0 16px rgba(255, 255, 255, 0.8) !important;
     }
 
+    .date-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
     .date-num-display {
-      font-size: 0.95rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 900;
       line-height: 1;
-      color: var(--c-ivory);
-      margin-bottom: 2px;
+      color: #FFF;
     }
-    .cal-table td.hk-holiday .date-num-display {
-      color: var(--c-hk-pink);
+    .time-slot-pill {
+      font-size: 0.55rem;
+      background: rgba(255,255,255,0.1);
+      color: var(--c-skyblue);
+      padding: 1px 3px;
+      border-radius: 4px;
+      font-weight: bold;
     }
 
-    .cell-badge {
-      font-size: 0.55rem;
+    /* FULL BAND GOLD BANNER */
+    .full-band-banner {
+      background: linear-gradient(135deg, #FFE259 0%, #FFA751 100%);
+      color: #000;
+      font-size: 0.58rem;
+      font-weight: 900;
+      text-align: center;
+      border-radius: 4px;
+      padding: 2px 0;
+      margin: 3px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    /* MEMBER AVATAR DOTS */
+    .avatar-dots-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-top: 4px;
+    }
+    .mini-avatar-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      color: #FFF;
+      font-size: 0.5rem;
       font-weight: bold;
-      border-radius: 3px;
-      padding: 1px 2px;
-      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(0,0,0,0.5);
+    }
+    .hours-counter-tag {
+      font-size: 0.6rem;
+      font-weight: bold;
+      color: #FFB088;
+      margin-left: auto;
+    }
+
+    .agenda-preview-line {
+      font-size: 0.55rem;
+      color: var(--c-skyblue);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: block;
-      width: 100%;
+      margin-top: 3px;
+      font-style: italic;
     }
-    .badge-holiday { background: var(--c-hk-pink); color: #FFF; }
-    .badge-fullband { background: var(--c-olive); color: #FFF; }
-    .badge-gig {
-      background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-      color: #111;
+
+    /* BEST PRACTICE SLOTS STYLES */
+    .best-slot-card {
+      background: #1E120C;
+      border-left: 4px solid var(--c-orange);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .best-slot-rank { font-weight: 900; color: #FFB088; margin-right: 6px; }
+    .ai-comment-box {
+      background: #180D24;
+      border: 1px solid #7B2CBF;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: #E0AAFF;
     }
 
     .member-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -438,7 +496,6 @@
         <button class="btn btn-outline" onclick="changeMonth(1)">Next ▶</button>
       </div>
 
-      <!-- HTML TABLE BASED CALENDAR TO FIX SAFARI GRID COLLAPSE -->
       <div class="cal-table-wrapper">
         <table class="cal-table">
           <thead>
@@ -451,9 +508,11 @@
       </div>
     </div>
 
+    <!-- BEST PRACTICE SLOTS WITH AI ADVISOR -->
     <div class="card">
       <div class="card-title">👑 🏆 Best Practice Slots</div>
-      <div id="bestSlotsList" style="font-size:0.85rem;">Searching calendar...</div>
+      <div id="bestSlotsList">Searching calendar...</div>
+      <div id="aiCommentContainer"></div>
     </div>
 
     <div class="card" id="dayDetailCard">
@@ -877,7 +936,7 @@
     }
 
     /* =========================================================
-       CALENDAR RENDERER (TABLE-BASED FOR RELIABLE Safari DISPLAY)
+       NEW GLOWING ORANGE CALENDAR CARD RENDERER
        ========================================================= */
     function renderCalendar() {
       const year = currentDate.getFullYear();
@@ -897,7 +956,6 @@
       let currentDay = 1;
       let row = document.createElement('tr');
 
-      // Empty cells before start of month
       for (let i = 0; i < startOffset; i++) {
         const emptyTd = document.createElement('td');
         emptyTd.className = 'other-month';
@@ -914,39 +972,56 @@
         const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         const td = document.createElement('td');
 
+        const dayAvail = appData.availability[dateStr] || {};
+        const availableMemberIds = Object.keys(dayAvail);
+        const hasSchedule = availableMemberIds.length > 0;
+
+        if (hasSchedule) td.classList.add('has-schedule');
         if (dateStr === selectedCalDate) td.classList.add('selected');
 
-        const isHkHoliday = !!HK_HOLIDAYS[dateStr];
-        if (isHkHoliday) td.classList.add('hk-holiday');
+        const isFullBand = availableMemberIds.length >= appData.members.length && appData.members.length > 0;
 
-        const dayAvail = appData.availability[dateStr] || {};
-        const availableMemberCount = Object.keys(dayAvail).length;
-        if (availableMemberCount >= 3) td.classList.add('has-overlap');
-        if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          td.classList.add('full-band');
+        let totalHoursCount = 0;
+        availableMemberIds.forEach(mId => {
+          totalHoursCount += Object.keys(dayAvail[mId] || {}).length;
+        });
+
+        const dObj = new Date(dateStr);
+        const isWeekend = (dObj.getDay() === 0 || dObj.getDay() === 6);
+
+        let cardContent = `
+          <div class="date-header-row">
+            <span class="date-num-display">${day}</span>
+            <span class="time-slot-pill">${isWeekend ? 'Full Day' : '19:00+'}</span>
+          </div>
+        `;
+
+        if (isFullBand) {
+          cardContent += `<div class="full-band-banner">👑 FULL BAND</div>`;
         }
 
-        let innerHTML = `<div class="date-num-display">${day}</div>`;
-
-        if (isHkHoliday) {
-          innerHTML += `<span class="cell-badge badge-holiday">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
-        } else if (availableMemberCount >= appData.members.length && appData.members.length > 0) {
-          innerHTML += `<span class="cell-badge badge-fullband">👑 Full Band</span>`;
+        if (hasSchedule) {
+          cardContent += `<div class="avatar-dots-row">`;
+          availableMemberIds.slice(0, 4).forEach(mId => {
+            const m = appData.members.find(x => x.id === mId);
+            if (m) {
+              cardContent += `<div class="mini-avatar-dot" style="background:${m.color}">${m.name.charAt(0)}</div>`;
+            }
+          });
+          cardContent += `<span class="hours-counter-tag">${totalHoursCount} hrs</span></div>`;
         }
 
-        const dayShow = (appData.shows || []).find(s => s.date === dateStr);
-        if (dayShow) {
-          innerHTML += `<span class="cell-badge badge-gig">🎷 ${dayShow.venue}</span>`;
+        if (appData.agendas[dateStr]) {
+          cardContent += `<div class="agenda-preview-line">🎵 ${appData.agendas[dateStr]}</div>`;
         }
 
-        td.innerHTML = innerHTML;
+        td.innerHTML = cardContent;
         td.onclick = () => selectCalendarDate(dateStr);
         row.appendChild(td);
 
         currentDay++;
       }
 
-      // Fill remaining empty cells in final week row
       while (row.children.length < 7) {
         const emptyTd = document.createElement('td');
         emptyTd.className = 'other-month';
@@ -979,7 +1054,7 @@
       const isHkHoliday = !!HK_HOLIDAYS[dateStr];
 
       if (isHkHoliday) {
-        holidayTag.innerHTML = `<span class="cell-badge badge-holiday" style="font-size:0.8rem; padding:3px 6px;">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
+        holidayTag.innerHTML = `<span class="time-slot-pill" style="font-size:0.8rem; padding:3px 6px; background:var(--c-hk-pink); color:#FFF;">🇭🇰 ${HK_HOLIDAYS[dateStr]}</span>`;
       } else {
         holidayTag.innerHTML = isWeekend ? `<span style="color:var(--c-skyblue); font-size:0.8rem;">Weekend</span>` : `<span style="color:var(--c-orange); font-size:0.8rem;">Weekday</span>`;
       }
@@ -1068,6 +1143,7 @@
     function saveSessionAgenda() {
       appData.agendas[selectedCalDate] = document.getElementById('sessionAgendaInput').value;
       saveState();
+      renderCalendar();
     }
 
     function renderOverlapBars(dateStr, isWeekend) {
@@ -1106,32 +1182,88 @@
       });
     }
 
+    /* =========================================================
+       SORTED BEST PRACTICE SLOTS & SMART AI ADVISOR
+       ========================================================= */
     function renderBestSlots() {
       const list = document.getElementById('bestSlotsList');
-      list.innerHTML = 'Top practice times with maximum band overlap:';
-      
+      const aiContainer = document.getElementById('aiCommentContainer');
+      list.innerHTML = '';
+      aiContainer.innerHTML = '';
+
       let ranked = [];
       Object.keys(appData.availability).forEach(dateStr => {
         const dayData = appData.availability[dateStr];
-        let totalCount = 0;
-        Object.values(dayData).forEach(mAvail => { totalCount += Object.keys(mAvail).length; });
-        if (totalCount > 0) ranked.push({ dateStr, score: totalCount });
+        const memberIds = Object.keys(dayData);
+        let totalHours = 0;
+        memberIds.forEach(mId => {
+          totalHours += Object.keys(dayData[mId] || {}).length;
+        });
+
+        if (memberIds.length > 0) {
+          ranked.push({
+            dateStr,
+            memberCount: memberIds.length,
+            totalHours,
+            memberIds
+          });
+        }
       });
 
-      ranked.sort((a,b) => b.score - a.score);
+      // SORT DESCENDING BY MEMBER COUNT, THEN BY TOTAL AVAILABLE HOURS
+      ranked.sort((a,b) => {
+        if (b.memberCount !== a.memberCount) return b.memberCount - a.memberCount;
+        return b.totalHours - a.totalHours;
+      });
 
       if (ranked.length === 0) {
         list.innerHTML = `<div style="color:#888; margin-top:6px;">No practice availability entered yet.</div>`;
         return;
       }
 
-      ranked.slice(0,3).forEach((item, idx) => {
+      ranked.slice(0, 5).forEach((item, idx) => {
         const div = document.createElement('div');
-        div.style.padding = '6px 0';
-        div.style.borderBottom = '1px solid #3D2B22';
-        div.innerHTML = `<strong>#${idx+1} ${item.dateStr}</strong> - ${item.score} member response(s)`;
+        div.className = 'best-slot-card';
+        
+        let memberDotsHTML = '';
+        item.memberIds.forEach(mId => {
+          const m = appData.members.find(x => x.id === mId);
+          if (m) {
+            memberDotsHTML += `<span class="mini-avatar-dot" style="background:${m.color}; display:inline-flex; margin-right:2px;">${m.name.charAt(0)}</span>`;
+          }
+        });
+
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span class="best-slot-rank">#${idx+1}</span>
+              <strong>${item.dateStr}</strong>
+            </div>
+            <span style="font-weight:bold; color:var(--c-orange);">${item.memberCount} / ${appData.members.length} members</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <div>${memberDotsHTML}</div>
+            <span style="font-size:0.75rem; color:var(--c-skyblue);">${item.totalHours} hours total</span>
+          </div>
+        `;
         list.appendChild(div);
       });
+
+      // AI ADVISOR RECOMMENDATION LOGIC
+      const totalBandCount = appData.members.length;
+      const nearMiss = ranked.find(r => r.memberCount === totalBandCount - 1);
+
+      if (nearMiss) {
+        const missingMember = appData.members.find(m => !nearMiss.memberIds.includes(m.id));
+        if (missingMember) {
+          aiContainer.innerHTML = `
+            <div class="ai-comment-box">
+              🤖 <strong>AI Assistant Recommendation:</strong><br>
+              <strong>${nearMiss.dateStr}</strong> is 1 member away from a <strong>FULL BAND</strong> practice session! If <strong>${missingMember.name} (${missingMember.role})</strong> could also adjust their schedule, you'll have 100% full band practice!
+            </div>
+          `;
+        }
+      }
     }
 
     function renderMemberPills() {
@@ -1278,8 +1410,8 @@
           </div>
           ${p.notes ? `<div style="font-size:0.85rem; color:var(--c-skyblue); margin-top:6px;">📝 ${p.notes}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openBandProjectModal('${p.id}')">✏️️ Edit</button>
-            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deleteBandProject('${p.id}')">🗑️️ Delete</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="openBandProjectModal('${p.id}')">✏ Edit</button>
+            <button class="btn btn-outline" style="font-size:0.65rem; padding:2px 6px;" onclick="deleteBandProject('${p.id}')">🗑 Delete</button>
           </div>
         `;
         container.appendChild(card);
@@ -1761,7 +1893,7 @@
           ${s.remarks ? `<div style="font-size:0.8rem; margin-top:4px; font-style:italic; color:#CCC;">📝 Remarks: ${s.remarks}</div>` : ''}
           <div style="display:flex; gap:8px; margin-top:8px;">
             <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="openShowModal('${s.id}')">✏️ Edit</button>
-            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 8px;" onclick="deleteShow('${s.id}')">🗑️ Delete</button>
+            <button class="btn btn-outline" style="font-size:0.75rem; padding:2px 6px;" onclick="deleteShow('${s.id}')">🗑️ Delete</button>
           </div>
         `;
         list.appendChild(card);
