@@ -264,7 +264,7 @@
     }
     .toast-msg.show { opacity: 1; }
 
-    /* 3. LARGER EXPANDED SQUARE CALENDAR GRID */
+    /* LARGER EXPANDED SQUARE CALENDAR GRID */
     .cal-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -273,7 +273,7 @@
     .cal-table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 2px; /* Reduced spacing to enlarge square cards */
+      border-spacing: 2px;
       table-layout: fixed;
     }
     .cal-table th {
@@ -286,7 +286,7 @@
     }
     .cal-table td {
       width: 14.28%;
-      aspect-ratio: 1 / 1; /* PERFECT EXPANDED SQUARE */
+      aspect-ratio: 1 / 1;
       background: #170E0A;
       border: 1px solid #322018;
       border-radius: 8px;
@@ -306,7 +306,6 @@
       border: 1px dashed #2A1A12;
     }
 
-    /* 1. PUBLIC HOLIDAY PINK TINT & RED DATE STYLES */
     .cal-table td.is-hk-holiday {
       border: 1.5px solid var(--c-hk-pink) !important;
       background: linear-gradient(180deg, rgba(255, 42, 117, 0.2) 0%, rgba(24, 14, 10, 0.95) 100%) !important;
@@ -316,7 +315,6 @@
       font-weight: 900;
     }
 
-    /* ORANGE GLOW EFFECT FOR SCHEDULED DAYS */
     .cal-table td.has-schedule {
       border: 1.5px solid #FF6B35 !important;
       box-shadow: 0 0 10px rgba(224, 74, 29, 0.55), inset 0 0 6px rgba(224, 74, 29, 0.15);
@@ -512,7 +510,7 @@
 
     .hashtag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
     .hashtag-chip {
-      background: #1F1F0F; border: 1px solid #553C30; color: var(--c-skyblue);
+      background: #1F150F; border: 1px solid #553C30; color: var(--c-skyblue);
       padding: 4px 10px; border-radius: 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
     }
     .hashtag-chip.selected { background: var(--c-orange); color: #FFF; border-color: var(--c-orange); }
@@ -574,7 +572,7 @@
 </head>
 <body>
 
-  <!-- 2. PASSWORD SECURITY OVERLAY -->
+  <!-- PASSWORD SECURITY OVERLAY -->
   <div id="lockScreen" class="lock-screen-overlay">
     <div class="lock-card">
       <div class="lock-title">🌮 Lazy Tacos OS</div>
@@ -1009,7 +1007,6 @@
       renderAllViews();
     };
 
-    /* 2. PASSWORD ACCESS CONTROL LOGIC */
     function checkSessionAuth() {
       if (sessionStorage.getItem('lazy_tacos_auth') === 'true') {
         document.getElementById('lockScreen').style.display = 'none';
@@ -1201,11 +1198,12 @@
       if (pendingIds.length === 0) {
         listContainer.innerHTML = `<span style="color:#2ECC71; font-weight:bold;">🎉 All roster members have submitted their times for this month!</span>`;
       } else {
-        const names = pendingIds.map(id => appData.members.find(m => m.id === id)?.name).filter(Boolean).join(', ');
+        const names = pendingIds.map(id => appData.members.find(m => m.id === id)?.name).filter(Boolean).join('、');
         listContainer.innerHTML = `<span>Still waiting for: <strong>${names}</strong></span>`;
       }
     }
 
+    /* 14 AMENDMENTS: DETAILED HOURLY OVERLAP FOR WHATSAPP REMINDER */
     function getTopOverlapDatesString() {
       const year = currentDate.getFullYear();
       const monthStr = String(currentDate.getMonth() + 1).padStart(2, '0');
@@ -1214,28 +1212,46 @@
       let matches = [];
       Object.keys(appData.availability).forEach(dateStr => {
         if (dateStr.startsWith(monthPrefix)) {
-          const avail = appData.availability[dateStr];
-          const count = Object.keys(avail).filter(id => targetRosterMemberIds.includes(id)).length;
-          if (count >= 2) matches.push({ dateStr, count });
+          const dayData = appData.availability[dateStr];
+          const activeMemberIds = Object.keys(dayData).filter(id => targetRosterMemberIds.includes(id));
+          if (activeMemberIds.length >= 2) {
+            let hourCounts = {};
+            activeMemberIds.forEach(mId => {
+              const slots = dayData[mId] || {};
+              Object.keys(slots).forEach(h => { hourCounts[h] = (hourCounts[h] || 0) + 1; });
+            });
+            let validHours = Object.keys(hourCounts).filter(h => hourCounts[h] >= 2);
+            let formattedHours = compressHoursList(validHours);
+            matches.push({
+              dateStr,
+              count: activeMemberIds.length,
+              hoursText: formattedHours
+            });
+          }
         }
       });
 
       matches.sort((a,b) => b.count - a.count);
       if (matches.length === 0) return '暫時未有合適日子';
-      return matches.slice(0, 3).map(m => m.dateStr.split('-').slice(1).join('/')).join('、');
+
+      return matches.slice(0, 3).map(m => {
+        const shortDate = m.dateStr.split('-').slice(1).join('/');
+        return `${shortDate}${m.hoursText ? ' (' + m.hoursText + ')' : ''}`;
+      }).join('、');
     }
 
+    /* 14 AMENDMENTS: UPDATED CANTONESE WHATSAPP REMINDER TEXT & LINK */
     function copyWhatsAppReminder() {
       const pendingIds = getPendingMembersForMonth();
       const pendingNames = pendingIds.map(id => appData.members.find(m => m.id === id)?.name).filter(Boolean).join('、');
       const topDates = getTopOverlapDatesString();
-      const currentMonthName = currentDate.toLocaleString('default', { month: 'long' });
+      const currentMonthNum = currentDate.getMonth() + 1;
 
       const msg = `🌮 Lazy Tacos 團練填時間提醒 🎺\n\n` +
-        `親愛的 ${pendingNames || '隊友'} 喊你嚟填時間啦！📅\n` +
-        `大家正喺度籌備 ${currentMonthName} 嘅 Practice Session，暫時熱門日子有：${topDates}\n\n` +
-        `快啲禁入下面條 Link 填埋你嘅 Timeslot 啦👇\n` +
-        `https://edwardfung99.github.io/lazytacos/`;
+        `${pendingNames || '隊友'} 到你嚟填時間啦！📅\n` +
+        `大家正喺度籌備 ${currentMonthNum}月 嘅 Practice Session，暫時熱門日子有：${topDates}\n\n` +
+        `快啲撳入下面條 Link 填埋你嘅 Timeslot 啦👇\n` +
+        `https://lazytacosmusic.github.io/lazytacos/`;
 
       navigator.clipboard.writeText(msg).then(() => {
         showToast();
@@ -1302,7 +1318,6 @@
       if (pageId === 'todo') renderThreads();
     }
 
-    /* 1. & 3. EXPANDED SQUARE CALENDAR WITH HK HOLIDAY PINK TINT & RED DATES */
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -1338,7 +1353,7 @@
         const td = document.createElement('td');
 
         const isHkHoliday = !!HK_HOLIDAYS[dateStr];
-        if (isHkHoliday) td.classList.add('is-hk-holiday'); // PINK CARD TINT + RED DATE
+        if (isHkHoliday) td.classList.add('is-hk-holiday');
 
         const dayAvail = appData.availability[dateStr] || {};
         const availableMemberIds = Object.keys(dayAvail);
@@ -1571,7 +1586,7 @@
     }
 
     function compressHoursList(numHours) {
-      if (!numHours || numHours.length === 0) return 'Various slots';
+      if (!numHours || numHours.length === 0) return '';
       
       let numbers = numHours.map(n => parseInt(n)).filter(n => !isNaN(n)).sort((a,b) => a - b);
       if (numbers.length === 0) return numHours.join(', ');
@@ -1656,7 +1671,7 @@
             <span style="font-weight:bold; color:var(--c-orange);">${item.memberCount} / ${targetTotal} roster members</span>
           </div>
           <div style="font-size:0.8rem; color:var(--c-skyblue); margin-top:4px;">
-            ⏰ <strong>Common Hours:</strong> ${item.commonHours}
+            ⏰ <strong>Common Hours:</strong> ${item.commonHours || 'Various slots'}
           </div>
           <div style="font-size:0.78rem; color:#CCC; margin-top:2px;">
             👥 <strong>Available:</strong> ${memberNamesList}
